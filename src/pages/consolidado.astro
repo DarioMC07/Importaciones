@@ -1,0 +1,535 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+
+const meses = [
+  'Enero','Febrero','Marzo','Abril','Mayo','Junio',
+  'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
+];
+
+const datos = {
+  mes: 'Septiembre', anio: 2026,
+  cantVendida: 1247,
+  ingresos:    45820.00,
+  costos:      22410.00,
+  transporte:   3650.00,
+  impuestos:    4120.00,
+  gananciaBruta: 23410.00,
+  gananciaNeta:  15640.00,
+};
+
+const topProductos = [
+  { nombre: 'Cable USB-C 2m',           cat: 'Electrónicos', cant: 498 },
+  { nombre: 'Audífono Bluetooth X200',   cat: 'Electrónicos', cant: 312 },
+  { nombre: 'Cargador Rápido 65W',       cat: 'Electrónicos', cant: 187 },
+  { nombre: 'Destornillador Set 12p',    cat: 'Herramientas', cant: 143 },
+  { nombre: 'Camiseta Deportiva',         cat: 'Textiles',     cant: 107 },
+];
+
+const desglose = [
+  { nombre: 'Ingresos totales',     valor: datos.ingresos,      color: '#2563EB',  signo: '+' },
+  { nombre: 'Costo de productos',   valor: datos.costos,        color: '#EF4444',  signo: '−' },
+  { nombre: 'Gastos de transporte', valor: datos.transporte,    color: '#F59E0B',  signo: '−' },
+  { nombre: 'Impuestos',            valor: datos.impuestos,     color: '#6366F1',  signo: '−' },
+];
+const tarjetasCarrusel = [
+  {
+    id: 'unidades',
+    label: 'Unidades Vendidas',
+    valor: datos.cantVendida.toLocaleString('es'),
+    num: datos.cantVendida,
+    esMoneda: false,
+    sufijo: '',
+    cambio: 'Productos despachados',
+    tipoCambio: 'neutro',
+    grad: 'linear-gradient(135deg,#6366F1,#8B5CF6)',
+    fondoIcono: 'rgba(99,102,241,0.14)',
+    colorIcono: '#6366F1',
+    colorAlpha: 'rgba(99,102,241,0.3)',
+    icono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 10-5 10 5v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/></svg>`,
+    detalle: 'Volumen total comercializado en el período'
+  },
+  {
+    id: 'ingresos',
+    label: 'Ingresos Brutos',
+    valor: `Bs. ${datos.ingresos.toLocaleString('es', {minimumFractionDigits:2})}`,
+    num: datos.ingresos,
+    esMoneda: true,
+    sufijo: '',
+    cambio: 'Total facturado en el período',
+    tipoCambio: 'pos',
+    grad: 'linear-gradient(135deg,#2563EB,#06B6D4)',
+    fondoIcono: 'rgba(37,99,235,0.14)',
+    colorIcono: '#3B82F6',
+    colorAlpha: 'rgba(37,99,235,0.3)',
+    icono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
+    detalle: 'Facturación bruta antes de deducciones'
+  },
+  {
+    id: 'ganancia-bruta',
+    label: 'Ganancia Bruta',
+    valor: `Bs. ${datos.gananciaBruta.toLocaleString('es', {minimumFractionDigits:2})}`,
+    num: datos.gananciaBruta,
+    esMoneda: true,
+    sufijo: '',
+    cambio: 'Ingresos menos Costos directos',
+    tipoCambio: 'pos',
+    grad: 'linear-gradient(135deg,#F59E0B,#F97316)',
+    fondoIcono: 'rgba(245,158,11,0.14)',
+    colorIcono: '#F59E0B',
+    colorAlpha: 'rgba(245,158,11,0.3)',
+    icono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`,
+    detalle: 'Margen sobre costo de mercancía (51.1%)'
+  },
+  {
+    id: 'ganancia-neta',
+    label: 'Ganancia Neta',
+    valor: `Bs. ${datos.gananciaNeta.toLocaleString('es', {minimumFractionDigits:2})}`,
+    num: datos.gananciaNeta,
+    esMoneda: true,
+    sufijo: '',
+    cambio: 'Resultado final del mes',
+    tipoCambio: 'pos',
+    grad: 'linear-gradient(135deg,#10B981,#059669)',
+    fondoIcono: 'rgba(16,185,129,0.14)',
+    colorIcono: '#10B981',
+    colorAlpha: 'rgba(16,185,129,0.3)',
+    icono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>`,
+    detalle: 'Beneficio neto deduciendo logística e impuestos'
+  },
+  {
+    id: 'margen-neto',
+    label: 'Margen de Rentabilidad',
+    valor: `${((datos.gananciaNeta / datos.ingresos) * 100).toFixed(1)}%`,
+    num: ((datos.gananciaNeta / datos.ingresos) * 100),
+    esMoneda: false,
+    sufijo: '%',
+    cambio: 'Rentabilidad limpia sobre ventas',
+    tipoCambio: 'pos',
+    grad: 'linear-gradient(135deg,#06B6D4,#3B82F6)',
+    fondoIcono: 'rgba(6,182,212,0.14)',
+    colorIcono: '#06B6D4',
+    colorAlpha: 'rgba(6,182,212,0.3)',
+    icono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="M9 9h.01"/><path d="M15 15h.01"/></svg>`,
+    detalle: 'Porcentaje de ganancia neta por cada boliviano'
+  },
+  {
+    id: 'logistica',
+    label: 'Logística & Aranceles',
+    valor: `Bs. ${(datos.transporte + datos.impuestos).toLocaleString('es', {minimumFractionDigits:2})}`,
+    num: (datos.transporte + datos.impuestos),
+    esMoneda: true,
+    sufijo: '',
+    cambio: 'Fletes e impuestos acumulados',
+    tipoCambio: 'neg',
+    grad: 'linear-gradient(135deg,#EC4899,#8B5CF6)',
+    fondoIcono: 'rgba(236,72,153,0.14)',
+    colorIcono: '#EC4899',
+    colorAlpha: 'rgba(236,72,153,0.3)',
+    icono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`,
+    detalle: 'Transporte Bs. 3.650 + Aduana Bs. 4.120'
+  }
+];
+---
+
+<AppLayout titulo="Consolidado" paginaActual="consolidado">
+
+  <div class="pagina-encabezado">
+    <div>
+      <h1 class="pagina-titulo">Consolidado de Resultados</h1>
+      <p class="pagina-subtitulo">Resumen financiero mensual de ventas y ganancias</p>
+    </div>
+    <div class="pagina-acciones">
+      <!-- Selector de mes -->
+      <div class="selector-mes">
+        <button class="sm-btn" id="mes-ant" title="Mes anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="sm-texto" id="mes-texto">{datos.mes} {datos.anio}</div>
+        <button class="sm-btn" id="mes-sig" title="Mes siguiente">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDER ESTILO DINÁMICO 3D (ESQUEMA SOLICITADO: < [IZQ] [B - ACTIVA] [DER] >) -->
+  <div class="slider-bloque">
+    <div class="slider-contenedor-b" id="slider-contenedor">
+      <!-- Flecha Izquierda (<) -->
+      <button class="slider-flecha-b" id="slider-prev" aria-label="Tarjeta anterior" title="Tarjeta anterior">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+
+      <!-- Escenario central de 3 tarjetas: [Izquierda] [Centro Activo "B"] [Derecha] -->
+      <div class="slider-escenario-b" id="slider-escenario">
+        {tarjetasCarrusel.map((t, idx) => (
+          <div
+            class={`slider-card-b ${idx === 0 ? 'card-centro' : idx === 1 ? 'card-der' : idx === tarjetasCarrusel.length - 1 ? 'card-izq' : 'card-oculta'}`}
+            data-indice={idx}
+            style={`--sc-grad:${t.grad};--sc-fondo-icono:${t.fondoIcono};--sc-color-icono:${t.colorIcono};--sc-color-icono-alpha:${t.colorAlpha};`}
+          >
+            <div class="stat-card-top" style="margin-bottom:6px">
+              <span class="stat-card-label" style="font-size:0.8rem;font-weight:600;letter-spacing:0.02em">{t.label}</span>
+              <div class="stat-card-icono" style={`background:${t.fondoIcono};color:${t.colorIcono};width:34px;height:34px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;`}>
+                <Fragment set:html={t.icono} />
+              </div>
+            </div>
+            <div
+              class="stat-card-valor contable"
+              data-val={t.num}
+              data-moneda={t.esMoneda ? 'true' : 'false'}
+              data-sufijo={t.sufijo}
+              style="font-size:1.45rem;font-weight:800;line-height:1.2;margin-bottom:6px"
+            >
+              {t.valor}
+            </div>
+            <div class={`stat-card-cambio ${t.tipoCambio === 'pos' ? 'cambio-pos' : t.tipoCambio === 'neg' ? 'cambio-neg' : ''}`} style="font-size:0.75rem;">
+              {t.cambio}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Flecha Derecha (>) -->
+      <button class="slider-flecha-b" id="slider-next" aria-label="Siguiente tarjeta" title="Siguiente tarjeta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Indicadores y control de estado de rotación automática -->
+    <div class="slider-inferior-b">
+      <div class="slider-indicadores-b" id="slider-indicadores">
+        {tarjetasCarrusel.map((_, idx) => (
+          <button
+            class={`slider-dot-b ${idx === 0 ? 'activo' : ''}`}
+            data-indice={idx}
+            aria-label={`Ir a tarjeta ${idx + 1}`}
+            title={`Tarjeta ${idx + 1} de ${tarjetasCarrusel.length}`}
+          />
+        ))}
+      </div>
+      <div class="slider-estado-b" id="slider-estado-chip" title="Rotación automática cada 4s (pausa al pasar el cursor)">
+        <span class="slider-punto-rot"></span>
+        <span id="slider-estado-txt">Auto (4s)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dos columnas: Desglose + Ranking -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--g-lg)">
+
+    <!-- Desglose financiero -->
+    <div class="tabla-cont">
+      <div class="tabla-header">
+        <div class="tabla-header-titulo">Desglose Financiero</div>
+        <span class="badge badge-info">{datos.mes} {datos.anio}</span>
+      </div>
+      <div style="padding:0 var(--g-lg)">
+        {desglose.map(d => (
+          <div class="desglose-item">
+            <div class="desglose-izq">
+              <div class="desglose-dot" style={`background:${d.color}`}></div>
+              <span class="desglose-nombre">{d.nombre}</span>
+            </div>
+            <div class="desglose-valor" style={d.signo === '−' ? 'color:var(--peligro)' : 'color:var(--primario-claro)'}>
+              {d.signo} Bs. {d.valor.toLocaleString('es', {minimumFractionDigits:2})}
+            </div>
+          </div>
+        ))}
+
+        <!-- Línea separadora -->
+        <div style="height:1px;background:var(--borde);margin:var(--g-md) 0"></div>
+
+        <!-- Ganancia Bruta -->
+        <div class="desglose-item">
+          <div class="desglose-izq">
+            <div class="desglose-dot" style="background:var(--advertencia)"></div>
+            <span class="desglose-nombre" style="font-weight:600;color:var(--texto)">Ganancia Bruta</span>
+          </div>
+          <div class="desglose-valor" style="color:var(--advertencia)">
+            = Bs. {datos.gananciaBruta.toLocaleString('es', {minimumFractionDigits:2})}
+          </div>
+        </div>
+
+        <!-- Ganancia Neta -->
+        <div class="desglose-item" style="padding-bottom:var(--g-lg)">
+          <div class="desglose-izq">
+            <div class="desglose-dot" style="background:var(--exito)"></div>
+            <span class="desglose-nombre" style="font-weight:700;color:var(--texto);font-size:0.95rem">Ganancia Neta</span>
+          </div>
+          <div style="font-family:var(--fuente-titulo);font-size:1.1rem;font-weight:800;color:var(--exito)">
+            = Bs. {datos.gananciaNeta.toLocaleString('es', {minimumFractionDigits:2})}
+          </div>
+        </div>
+
+        <!-- Margen porcentual -->
+        <div style="background:var(--exito-fondo);border:1px solid rgba(16,185,129,0.2);border-radius:var(--r-md);padding:var(--g-md);margin-bottom:var(--g-lg);display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:0.87rem;color:var(--exito);font-weight:600">Margen de ganancia neta</span>
+          <span style="font-family:var(--fuente-titulo);font-size:1.2rem;font-weight:800;color:var(--exito)">
+            {((datos.gananciaNeta / datos.ingresos) * 100).toFixed(1)}%
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top productos -->
+    <div class="tabla-cont">
+      <div class="tabla-header">
+        <div class="tabla-header-titulo">Productos Más Vendidos</div>
+        <span class="badge badge-exito">Top {topProductos.length}</span>
+      </div>
+      <div style="padding:0 var(--g-lg) var(--g-lg)">
+        {topProductos.map((p, i) => (
+          <div class="ranking-item animar">
+            <div class={`ranking-pos ${i === 0 ? 'pos-1' : i === 1 ? 'pos-2' : i === 2 ? 'pos-3' : 'pos-n'}`}>
+              {i + 1}
+            </div>
+            <div class="ranking-info">
+              <div class="ranking-nombre">{p.nombre}</div>
+              <div class="ranking-cat">{p.cat}</div>
+            </div>
+            <!-- Mini barra -->
+            <div style="display:flex;align-items:center;gap:8px;min-width:100px">
+              <div style="flex:1;height:5px;background:var(--borde);border-radius:99px;overflow:hidden">
+                <div style={`height:100%;width:${Math.round((p.cant / topProductos[0].cant)*100)}%;background:var(--grad-primario);border-radius:99px`}></div>
+              </div>
+              <span class="ranking-cant">{p.cant}</span>
+            </div>
+          </div>
+        ))}
+
+        <!-- Total vendido -->
+        <div style="margin-top:var(--g-md);padding:var(--g-md);background:var(--superficie);border-radius:var(--r-md);display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:0.87rem;color:var(--texto-secundario)">Total unidades del mes</span>
+          <span style="font-family:var(--fuente-titulo);font-size:1.1rem;font-weight:700;color:var(--texto)">
+            {datos.cantVendida.toLocaleString()}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla resumen por producto (detalle) -->
+  <div class="tabla-cont mt-lg">
+    <div class="tabla-header">
+      <div class="tabla-header-titulo">Detalle por Producto — {datos.mes} {datos.anio}</div>
+    </div>
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Producto</th><th>Categoría</th><th>Unidades</th>
+            <th>% del total</th><th>Ingresos Est.</th><th>Desempeño</th>
+          </tr>
+        </thead>
+        <tbody>
+          {topProductos.map(p => {
+            const pct = ((p.cant / datos.cantVendida) * 100).toFixed(1);
+            const ingEst = (p.cant * (p.cat === 'Electrónicos' ? 28.83 : p.cat === 'Herramientas' ? 28 : 18)).toFixed(2);
+            return (
+              <tr class="animar">
+                <td style="font-weight:500">{p.nombre}</td>
+                <td><span class="badge badge-info">{p.cat}</span></td>
+                <td style="font-family:var(--fuente-mono);font-weight:700">{p.cant.toLocaleString()}</td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div style="width:60px;height:5px;background:var(--borde);border-radius:99px;overflow:hidden">
+                      <div style={`height:100%;width:${pct}%;background:var(--grad-primario);border-radius:99px`}></div>
+                    </div>
+                    <span style="font-size:0.8rem;color:var(--texto-secundario)">{pct}%</span>
+                  </div>
+                </td>
+                <td class="precio precio-positivo">Bs. {ingEst}</td>
+                <td>
+                  <span class="badge badge-exito">Alto</span>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</AppLayout>
+
+<script>
+  // 1. Selector de mes
+  const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  let mesActual = 8; // Septiembre (0-based)
+  let anioActual = 2026;
+  const textoMes = document.getElementById('mes-texto')!;
+
+  document.getElementById('mes-ant')?.addEventListener('click', () => {
+    mesActual--;
+    if (mesActual < 0) { mesActual = 11; anioActual--; }
+    textoMes.textContent = `${meses[mesActual]} ${anioActual}`;
+  });
+
+  document.getElementById('mes-sig')?.addEventListener('click', () => {
+    mesActual++;
+    if (mesActual > 11) { mesActual = 0; anioActual++; }
+    textoMes.textContent = `${meses[mesActual]} ${anioActual}`;
+  });
+
+  // 2. Slider Dinámico 3D (Estilo < [IZQ] [B - ACTIVA] [DER] >)
+  const sliderContenedor = document.getElementById('slider-contenedor');
+  const sliderEscenario  = document.getElementById('slider-escenario');
+  const btnNext          = document.getElementById('slider-next');
+  const btnPrev          = document.getElementById('slider-prev');
+  const cards            = Array.from(document.querySelectorAll('.slider-card-b')) as HTMLElement[];
+  const dots             = Array.from(document.querySelectorAll('.slider-dot-b')) as HTMLElement[];
+  const estadoChip       = document.getElementById('slider-estado-chip');
+  const estadoTxt        = document.getElementById('slider-estado-txt');
+
+  const total = cards.length;
+  let curr = 0;
+  let timer: any = null;
+  let estaPausado = false;
+  const INTERVALO = 4000;
+
+  function actualizarPosiciones(nuevoIndice: number) {
+    curr = (nuevoIndice % total + total) % total;
+    const izq = (curr - 1 + total) % total;
+    const der = (curr + 1) % total;
+
+    cards.forEach((c, i) => {
+      c.classList.remove('card-centro', 'card-izq', 'card-der', 'card-oculta');
+      if (i === curr) {
+        c.classList.add('card-centro');
+      } else if (i === izq) {
+        c.classList.add('card-izq');
+      } else if (i === der) {
+        c.classList.add('card-der');
+      } else {
+        c.classList.add('card-oculta');
+      }
+    });
+
+    dots.forEach((dot, i) => {
+      if (i === curr) {
+        dot.classList.add('activo');
+      } else {
+        dot.classList.remove('activo');
+      }
+    });
+  }
+
+  function irA(nuevoIndice: number) {
+    actualizarPosiciones(nuevoIndice);
+    reiniciarTimer();
+  }
+
+  function reiniciarTimer() {
+    if (timer) clearInterval(timer);
+    if (!estaPausado) {
+      timer = setInterval(() => {
+        irA(curr + 1);
+      }, INTERVALO);
+    }
+  }
+
+  function pausar() {
+    estaPausado = true;
+    if (timer) clearInterval(timer);
+    if (estadoChip) estadoChip.classList.add('pausado');
+    if (estadoTxt) estadoTxt.textContent = 'Pausado';
+  }
+
+  function reanudar() {
+    estaPausado = false;
+    if (estadoChip) estadoChip.classList.remove('pausado');
+    if (estadoTxt) estadoTxt.textContent = 'Auto (4s)';
+    reiniciarTimer();
+  }
+
+  btnNext?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    irA(curr + 1);
+  });
+
+  btnPrev?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    irA(curr - 1);
+  });
+
+  cards.forEach((card, idx) => {
+    card.addEventListener('click', () => {
+      if (card.classList.contains('card-izq') || card.classList.contains('card-der')) {
+        irA(idx);
+      }
+    });
+  });
+
+  dots.forEach((dot, idx) => {
+    dot.addEventListener('click', () => {
+      irA(idx);
+    });
+  });
+
+  sliderContenedor?.addEventListener('mouseenter', pausar);
+  sliderContenedor?.addEventListener('mouseleave', reanudar);
+
+  let touchInicioX = 0;
+  sliderEscenario?.addEventListener('touchstart', (e) => {
+    touchInicioX = e.touches[0].clientX;
+    pausar();
+  }, { passive: true });
+
+  sliderEscenario?.addEventListener('touchend', (e) => {
+    const diffX = e.changedTouches[0].clientX - touchInicioX;
+    if (diffX < -40) {
+      irA(curr + 1);
+    } else if (diffX > 40) {
+      irA(curr - 1);
+    }
+    reanudar();
+  }, { passive: true });
+
+  // 3. Animación counter-up segura (sin NaN)
+  function animarContador(el: HTMLElement, valorFinal: number, esMoneda = false, sufijo = '') {
+    if (isNaN(valorFinal)) return;
+    const duracion = 800;
+    const inicio = Date.now();
+    const animar = () => {
+      const progreso = Math.min((Date.now() - inicio) / duracion, 1);
+      const easing   = 1 - Math.pow(1 - progreso, 3);
+      const valorActual = valorFinal * easing;
+      if (esMoneda) {
+        el.textContent = `Bs. ${valorActual.toLocaleString('es', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      } else if (sufijo) {
+        el.textContent = `${valorActual.toFixed(1)}${sufijo}`;
+      } else {
+        el.textContent = Math.round(valorActual).toLocaleString('es');
+      }
+      if (progreso < 1) requestAnimationFrame(animar);
+    };
+    requestAnimationFrame(animar);
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target as HTMLElement;
+        if (el.classList.contains('contable')) {
+          const rawVal = el.dataset.val || '0';
+          const val = parseFloat(rawVal) || 0;
+          const esMoneda = el.dataset.moneda === 'true';
+          const sufijo = el.dataset.sufijo || '';
+          animarContador(el, val, esMoneda, sufijo);
+          observer.unobserve(el);
+        }
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('.contable').forEach(el => observer.observe(el));
+
+  setTimeout(() => {
+    actualizarPosiciones(0);
+    reiniciarTimer();
+  }, 100);
+</script>

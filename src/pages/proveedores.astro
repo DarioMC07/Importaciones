@@ -1,0 +1,225 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+
+const proveedores = [
+  { id: 'P001', nombre: 'Importadora Zheng',  correo: 'contact@zheng.cn',       pais: 'China',    impAnon: '12%', producto: 'Electrónicos',        estado: 'activo' },
+  { id: 'P002', nombre: 'Electro Brasil Ltda', correo: 'ventas@electrobr.com',   pais: 'Brasil',   impAnon: '8%',  producto: 'Cables y accesorios', estado: 'activo' },
+  { id: 'P003', nombre: 'Tech Mexico SA',       correo: 'info@techmex.mx',        pais: 'México',   impAnon: '10%', producto: 'Componentes',         estado: 'activo' },
+  { id: 'P004', nombre: 'Global Trade US',      correo: 'sales@globaltrade.us',   pais: 'EE.UU.',   impAnon: '15%', producto: 'Herramientas',        estado: 'inactivo' },
+  { id: 'P005', nombre: 'Panasiatic Ltd',       correo: 'hello@panasiatic.sg',    pais: 'Singapur', impAnon: '6%',  producto: 'Textiles',            estado: 'activo' },
+  { id: 'P006', nombre: 'EuroTech Import',      correo: 'imports@eurotech.de',    pais: 'Alemania', impAnon: '18%', producto: 'Maquinaria',          estado: 'activo' },
+];
+---
+
+<AppLayout titulo="Proveedores" paginaActual="proveedores">
+
+  <!-- Encabezado de página -->
+  <div class="pagina-encabezado">
+    <div>
+      <h1 class="pagina-titulo">Proveedores</h1>
+      <p class="pagina-subtitulo">Gestiona tus importadores y sus condiciones comerciales</p>
+    </div>
+    <div class="pagina-acciones">
+      <button class="btn btn-primario" data-abrir-modal="modal-proveedor" id="btn-nuevo-proveedor">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nuevo Proveedor
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grilla" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">
+    <div class="stat-card animar" style="--sc-grad:linear-gradient(135deg,#2563EB,#06B6D4);--sc-fondo-icono:rgba(37,99,235,0.12);--sc-color-icono:#3B82F6">
+      <div class="stat-card-top">
+        <div class="stat-card-label">Total</div>
+        <div class="stat-card-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+      </div>
+      <div class="stat-card-valor">6</div>
+      <div class="stat-card-cambio">Proveedores registrados</div>
+    </div>
+    <div class="stat-card animar" style="--sc-grad:linear-gradient(135deg,#10B981,#059669);--sc-fondo-icono:rgba(16,185,129,0.12);--sc-color-icono:#10B981">
+      <div class="stat-card-top">
+        <div class="stat-card-label">Activos</div>
+        <div class="stat-card-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+      <div class="stat-card-valor">5</div>
+      <div class="stat-card-cambio cambio-pos">En operación</div>
+    </div>
+    <div class="stat-card animar" style="--sc-grad:linear-gradient(135deg,#6366F1,#8B5CF6);--sc-fondo-icono:rgba(99,102,241,0.12);--sc-color-icono:#6366F1">
+      <div class="stat-card-top">
+        <div class="stat-card-label">Países</div>
+        <div class="stat-card-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+      </div>
+      <div class="stat-card-valor">6</div>
+      <div class="stat-card-cambio">Países de origen</div>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="tabla-cont">
+    <div class="tabla-header">
+      <div class="tabla-header-titulo">Lista de Proveedores</div>
+      <div class="tabla-acciones-header">
+        <div class="busqueda-cont">
+          <svg class="busqueda-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="input-busqueda" id="busqueda-prov" type="text" placeholder="Buscar proveedor…" />
+        </div>
+      </div>
+    </div>
+    <div class="tabla-scroll">
+      <table id="tabla-proveedores">
+        <thead>
+          <tr>
+            <th>Código</th><th>Nombre</th><th>País</th>
+            <th>Producto</th><th>Imp. Anon.</th><th>Correo</th>
+            <th>Estado</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {proveedores.map(p => (
+            <tr class="animar fila-prov" data-nombre={p.nombre.toLowerCase()}>
+              <td><span class="celda-codigo">{p.id}</span></td>
+              <td style="font-weight:600">{p.nombre}</td>
+              <td>{p.pais}</td>
+              <td style="color:var(--texto-secundario)">{p.producto}</td>
+              <td style="font-family:var(--fuente-mono);color:var(--advertencia)">{p.impAnon}</td>
+              <td style="color:var(--texto-secundario);font-size:0.82rem">{p.correo}</td>
+              <td>
+                <span class={`badge ${p.estado === 'activo' ? 'badge-exito' : 'badge-neutro'}`}>
+                  {p.estado}
+                </span>
+              </td>
+              <td>
+                <div class="celda-acciones">
+                  <button class="btn btn-ghost btn-icono btn-sm btn-editar-prov"
+                    title="Editar"
+                    data-id={p.id} data-nombre={p.nombre}
+                    data-correo={p.correo} data-pais={p.pais}
+                    data-impa={p.impAnon} data-producto={p.producto}
+                    data-estado={p.estado}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                  </button>
+                  <button class="btn btn-peligro btn-icono btn-sm" title="Eliminar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL: Nuevo / Editar Proveedor -->
+  <div class="modal-overlay" id="modal-proveedor">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-titulo">
+          <div class="modal-titulo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          </div>
+          <span id="modal-prov-titulo">Nuevo Proveedor</span>
+        </div>
+        <button class="modal-cerrar" data-cerrar-modal>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grilla">
+          <div class="form-grupo">
+            <label class="form-label">Código</label>
+            <input class="form-input" id="prov-id" type="text" placeholder="P007" />
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Estado</label>
+            <select class="form-select" id="prov-estado">
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Nombre del Proveedor</label>
+          <input class="form-input" id="prov-nombre" type="text" placeholder="Ej. Importadora Global SA" />
+        </div>
+        <div class="form-grilla">
+          <div class="form-grupo">
+            <label class="form-label">Correo Electrónico</label>
+            <input class="form-input" id="prov-correo" type="email" placeholder="contacto@empresa.com" />
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">País de Origen</label>
+            <input class="form-input" id="prov-pais" type="text" placeholder="Ej. China" />
+          </div>
+        </div>
+        <div class="form-grilla">
+          <div class="form-grupo">
+            <label class="form-label">Producto Principal</label>
+            <input class="form-input" id="prov-producto" type="text" placeholder="Ej. Electrónicos" />
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Impuestos Anónimos (%)</label>
+            <input class="form-input" id="prov-impa" type="text" placeholder="Ej. 12%" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secundario" data-cerrar-modal>Cancelar</button>
+        <button class="btn btn-primario" id="btn-guardar-prov">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Guardar Proveedor
+        </button>
+      </div>
+    </div>
+  </div>
+</AppLayout>
+
+<script>
+  // Búsqueda en tabla
+  const busqueda = document.getElementById('busqueda-prov') as HTMLInputElement;
+  busqueda?.addEventListener('input', () => {
+    const q = busqueda.value.toLowerCase();
+    document.querySelectorAll('.fila-prov').forEach((fila) => {
+      const nombre = (fila as HTMLElement).dataset.nombre || '';
+      (fila as HTMLElement).style.display = nombre.includes(q) ? '' : 'none';
+    });
+  });
+
+  // Editar proveedor — rellenar modal
+  document.querySelectorAll('.btn-editar-prov').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const d = (btn as HTMLElement).dataset;
+      (document.getElementById('prov-id')      as HTMLInputElement).value = d.id      || '';
+      (document.getElementById('prov-nombre')   as HTMLInputElement).value = d.nombre  || '';
+      (document.getElementById('prov-correo')   as HTMLInputElement).value = d.correo  || '';
+      (document.getElementById('prov-pais')     as HTMLInputElement).value = d.pais    || '';
+      (document.getElementById('prov-producto') as HTMLInputElement).value = d.producto|| '';
+      (document.getElementById('prov-impa')     as HTMLInputElement).value = d.impa    || '';
+      (document.getElementById('prov-estado')   as HTMLSelectElement).value = d.estado || 'activo';
+      (document.getElementById('modal-prov-titulo') as HTMLElement).textContent = 'Editar Proveedor';
+      document.getElementById('modal-proveedor')?.classList.add('abierto');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  // Limpiar modal al abrir "Nuevo"
+  document.getElementById('btn-nuevo-proveedor')?.addEventListener('click', () => {
+    ['prov-id','prov-nombre','prov-correo','prov-pais','prov-producto','prov-impa'].forEach(id => {
+      (document.getElementById(id) as HTMLInputElement).value = '';
+    });
+    (document.getElementById('modal-prov-titulo') as HTMLElement).textContent = 'Nuevo Proveedor';
+  });
+
+  // Guardar (simulado)
+  document.getElementById('btn-guardar-prov')?.addEventListener('click', () => {
+    document.getElementById('modal-proveedor')?.classList.remove('abierto');
+    document.body.style.overflow = '';
+  });
+</script>

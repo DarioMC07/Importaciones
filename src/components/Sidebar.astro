@@ -1,0 +1,89 @@
+---
+interface Props {
+  paginaActual: string;
+}
+const { paginaActual } = Astro.props;
+
+const grupos = [
+  {
+    titulo: 'Principal',
+    items: [
+      { id: 'index',       nombre: 'Dashboard',    href: '/' },
+    ]
+  },
+  {
+    titulo: 'Gestión',
+    items: [
+      { id: 'proveedores', nombre: 'Proveedores',  href: '/proveedores' },
+      { id: 'inventario',  nombre: 'Inventario',   href: '/inventario'  },
+      { id: 'productos',   nombre: 'Productos',    href: '/productos'   },
+      { id: 'clientes',    nombre: 'Clientes',     href: '/clientes'    },
+    ]
+  },
+  {
+    titulo: 'Comercial',
+    items: [
+      { id: 'ventas',      nombre: 'Ventas',       href: '/ventas'      },
+      { id: 'consolidado', nombre: 'Consolidado',  href: '/consolidado' },
+    ]
+  }
+];
+
+const iconos: Record<string, string> = {
+  index: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="14" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/></svg>`,
+  proveedores: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`,
+  inventario: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 10-5 10 5v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/></svg>`,
+  productos: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>`,
+  clientes: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  ventas: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>`,
+  consolidado: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><path d="M2 20h20"/></svg>`,
+};
+---
+
+<aside class="sidebar">
+  <!-- Logo -->
+  <div class="sidebar-logo">
+    <div class="logo-icono">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"/>
+        <path d="M16.5 9.4 7.55 4.24"/><polyline points="3.29 7 12 12 20.71 7"/>
+        <line x1="12" y1="22" x2="12" y2="12"/>
+        <circle cx="18.5" cy="15.5" r="2.5"/>
+        <path d="M20.27 17.27 22 19"/>
+      </svg>
+    </div>
+    <div class="logo-texto">
+      <span class="logo-nombre">ImportPro</span>
+      <span class="logo-slogan">Gestión de Importaciones</span>
+    </div>
+  </div>
+
+  <!-- Navegación -->
+  <nav class="sidebar-nav">
+    {grupos.map(grupo => (
+      <div class="nav-grupo">
+        <div class="nav-grupo-titulo">{grupo.titulo}</div>
+        {grupo.items.map(item => (
+          <a
+            href={item.href}
+            class={`nav-item ${paginaActual === item.id ? 'activo' : ''}`}
+          >
+            <Fragment set:html={iconos[item.id]} />
+            {item.nombre}
+          </a>
+        ))}
+      </div>
+    ))}
+  </nav>
+
+  <!-- Footer usuario -->
+  <div class="sidebar-pie">
+    <div class="sidebar-usuario">
+      <div class="avatar-sidebar">AD</div>
+      <div class="usuario-info">
+        <div class="usuario-nombre">Administrador</div>
+        <div class="usuario-rol">Acceso completo</div>
+      </div>
+    </div>
+  </div>
+</aside>

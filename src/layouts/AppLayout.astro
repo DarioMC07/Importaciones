@@ -1,0 +1,101 @@
+---
+import Sidebar from '../components/Sidebar.astro';
+import Header  from '../components/Header.astro';
+import '../styles/global.css';
+
+interface Props {
+  titulo:       string;
+  paginaActual: string;
+  descripcion?: string;
+}
+
+const {
+  titulo,
+  paginaActual,
+  descripcion = `${titulo} — ImportPro, Sistema de Gestión de Importaciones`
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es" data-tema="oscuro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={descripcion} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{titulo} — ImportPro</title>
+
+    <!-- Prevenir flash de tema incorrecto -->
+    <script is:inline>
+      (function() {
+        var t = localStorage.getItem('importpro-tema') || 'oscuro';
+        document.documentElement.setAttribute('data-tema', t);
+      })();
+    </script>
+  </head>
+
+  <body>
+    <div class="app">
+      <Sidebar paginaActual={paginaActual} />
+      <div class="contenido-app">
+        <Header titulo={titulo} />
+        <main class="main-contenido">
+          <slot />
+        </main>
+      </div>
+    </div>
+
+    <!-- Script global: toggle tema + modal helpers -->
+    <script>
+      // ── Toggle tema ──────────────────────────────
+      document.addEventListener('click', (e) => {
+        const btn = (e.target as Element).closest('[data-toggle-tema]');
+        if (!btn) return;
+        const html = document.documentElement;
+        const actual  = html.getAttribute('data-tema');
+        const nuevo   = actual === 'oscuro' ? 'claro' : 'oscuro';
+        html.setAttribute('data-tema', nuevo);
+        localStorage.setItem('importpro-tema', nuevo);
+      });
+
+      // ── Modales: apertura/cierre global ─────────
+      document.addEventListener('click', (e) => {
+        const target = e.target as Element;
+
+        // Abrir modal
+        const btnAbrir = target.closest('[data-abrir-modal]') as HTMLElement | null;
+        if (btnAbrir) {
+          const id = btnAbrir.dataset.abrirModal!;
+          document.getElementById(id)?.classList.add('abierto');
+          document.body.style.overflow = 'hidden';
+          return;
+        }
+
+        // Cerrar modal — botón cerrar
+        const btnCerrar = target.closest('[data-cerrar-modal]');
+        if (btnCerrar) {
+          const overlay = (btnCerrar as Element).closest('.modal-overlay');
+          overlay?.classList.remove('abierto');
+          document.body.style.overflow = '';
+          return;
+        }
+
+        // Cerrar modal — clic en el overlay
+        if (target.classList.contains('modal-overlay')) {
+          target.classList.remove('abierto');
+          document.body.style.overflow = '';
+        }
+      });
+
+      // Tecla Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          document.querySelectorAll('.modal-overlay.abierto').forEach(m => {
+            m.classList.remove('abierto');
+          });
+          document.body.style.overflow = '';
+        }
+      });
+    </script>
+  </body>
+</html>

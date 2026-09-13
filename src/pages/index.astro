@@ -1,0 +1,375 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+
+const stats = [
+  {
+    label: 'Ventas del Mes',
+    valor: 'Bs. 45.820',
+    cambio: '+12.4% vs mes anterior',
+    pos: true,
+    grad: 'linear-gradient(135deg,#2563EB,#06B6D4)',
+    fondoIcono: 'rgba(37,99,235,0.12)',
+    colorIcono: '#3B82F6',
+    icono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`
+  },
+  {
+    label: 'Ganancia Neta',
+    valor: 'Bs. 15.640',
+    cambio: '+8.7% vs mes anterior',
+    pos: true,
+    grad: 'linear-gradient(135deg,#10B981,#059669)',
+    fondoIcono: 'rgba(16,185,129,0.12)',
+    colorIcono: '#10B981',
+    icono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`
+  },
+  {
+    label: 'Clientes Activos',
+    valor: '5',
+    cambio: '+2 este mes',
+    pos: true,
+    grad: 'linear-gradient(135deg,#6366F1,#8B5CF6)',
+    fondoIcono: 'rgba(99,102,241,0.12)',
+    colorIcono: '#6366F1',
+    icono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`
+  },
+  {
+    label: 'Productos en Stock',
+    valor: '1.028',
+    cambio: '2 productos bajo mínimo',
+    pos: false,
+    grad: 'linear-gradient(135deg,#F59E0B,#EF4444)',
+    fondoIcono: 'rgba(245,158,11,0.12)',
+    colorIcono: '#F59E0B',
+    icono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 10-5 10 5v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/></svg>`
+  },
+];
+
+const modulos = [
+  {
+    nombre: 'Proveedores',
+    desc: 'Gestión y catálogo de importadores internacionales',
+    href: '/proveedores',
+    color: '#2563EB',
+    fondo: 'rgba(37,99,235,0.12)',
+    grad: 'linear-gradient(135deg,#2563EB,#06B6D4)',
+    alpha: 'rgba(37,99,235,0.3)',
+    icono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`
+  },
+  {
+    nombre: 'Inventario',
+    desc: 'Control de existencias, valuación y stock mínimo',
+    href: '/inventario',
+    color: '#10B981',
+    fondo: 'rgba(16,185,129,0.12)',
+    grad: 'linear-gradient(135deg,#10B981,#059669)',
+    alpha: 'rgba(16,185,129,0.3)',
+    icono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 10-5 10 5v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/></svg>`
+  },
+  {
+    nombre: 'Productos',
+    desc: 'Catálogo de artículos, margen y costos de importación',
+    href: '/productos',
+    color: '#6366F1',
+    fondo: 'rgba(99,102,241,0.12)',
+    grad: 'linear-gradient(135deg,#6366F1,#8B5CF6)',
+    alpha: 'rgba(99,102,241,0.3)',
+    icono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>`
+  },
+  {
+    nombre: 'Clientes',
+    desc: 'Directorio de compradores registrados y contacto',
+    href: '/clientes',
+    color: '#F59E0B',
+    fondo: 'rgba(245,158,11,0.12)',
+    grad: 'linear-gradient(135deg,#F59E0B,#F97316)',
+    alpha: 'rgba(245,158,11,0.3)',
+    icono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`
+  },
+  {
+    nombre: 'Ventas',
+    desc: 'Registro diario de ventas, órdenes y cobranza',
+    href: '/ventas',
+    color: '#EF4444',
+    fondo: 'rgba(239,68,68,0.12)',
+    grad: 'linear-gradient(135deg,#EF4444,#DC2626)',
+    alpha: 'rgba(239,68,68,0.3)',
+    icono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>`
+  },
+  {
+    nombre: 'Consolidado',
+    desc: 'Balance mensual financiero, márgenes y ranking',
+    href: '/consolidado',
+    color: '#06B6D4',
+    fondo: 'rgba(6,182,212,0.12)',
+    grad: 'linear-gradient(135deg,#06B6D4,#3B82F6)',
+    alpha: 'rgba(6,182,212,0.3)',
+    icono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><path d="M2 20h20"/></svg>`
+  },
+];
+
+const ventasRecientes = [
+  { id: 'V001', producto: 'Audífono Bluetooth X200', cliente: 'María González',  monto: 210.00, pago: 'QR',      hora: '09:14' },
+  { id: 'V002', producto: 'Cable USB-C 2m',          cliente: 'Ana Flores',     monto: 114.00, pago: 'Efectivo', hora: '10:32' },
+  { id: 'V003', producto: 'Cargador Rápido 65W',     cliente: 'Carlos Mendoza', monto: 105.00, pago: 'QR',      hora: '11:58' },
+  { id: 'V004', producto: 'Destornillador Set 12p',   cliente: 'Roberto Silva',  monto:  84.00, pago: 'Efectivo', hora: '14:05' },
+  { id: 'V005', producto: 'Camiseta Deportiva',       cliente: 'Luisa Vargas',   monto:  72.00, pago: 'QR',      hora: '15:22' },
+];
+---
+
+<AppLayout titulo="Dashboard" paginaActual="index">
+  <!-- Bienvenida -->
+  <div style="margin-bottom:var(--g-xl)">
+    <div style="font-family:var(--fuente-titulo);font-size:1.9rem;font-weight:800;color:var(--texto);line-height:1.2">
+      Bienvenido de vuelta
+    </div>
+    <div style="color:var(--texto-secundario);margin-top:6px;font-size:0.9rem">
+      Aquí tienes el resumen del negocio hoy, <strong style="color:var(--texto)">12 de septiembre de 2026</strong>.
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grilla">
+    {stats.map(s => (
+      <div class="stat-card animar" style={`--sc-grad:${s.grad};--sc-fondo-icono:${s.fondoIcono};--sc-color-icono:${s.colorIcono}`}>
+        <div class="stat-card-top">
+          <div class="stat-card-label">{s.label}</div>
+          <div class="stat-card-icono">
+            <Fragment set:html={s.icono} />
+          </div>
+        </div>
+        <div class="stat-card-valor">{s.valor}</div>
+        <div class={`stat-card-cambio ${s.pos ? 'cambio-pos' : 'cambio-neg'}`}>
+          <span style="font-weight:700">{s.pos ? '+ ' : ''}</span>{s.cambio}
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <!-- Módulos de acceso rápido: Slider 3D Dinámico -->
+  <div class="seccion-titulo" style="margin-bottom:var(--g-md)">Accesos Rápidos</div>
+
+  <div class="slider-bloque">
+    <div class="slider-contenedor-b" id="slider-modulos-contenedor">
+      <!-- Flecha Izquierda (<) -->
+      <button class="slider-flecha-b" id="slider-modulos-prev" aria-label="Módulo anterior" title="Módulo anterior">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+
+      <!-- Escenario central de 3 tarjetas: [Izquierda] [Centro Activo "B"] [Derecha] -->
+      <div class="slider-escenario-b" id="slider-modulos-escenario">
+        {modulos.map((m, idx) => (
+          <a
+            href={m.href}
+            class={`slider-card-b modulo-slide ${idx === 0 ? 'card-centro' : idx === 1 ? 'card-der' : idx === modulos.length - 1 ? 'card-izq' : 'card-oculta'}`}
+            data-indice={idx}
+            data-href={m.href}
+            style={`--sc-grad:${m.grad};--sc-color-icono:${m.color};--sc-color-icono-alpha:${m.alpha};`}
+          >
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <div class="modulo-icono" style={`color:${m.color};background:${m.fondo};width:42px;height:42px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;`}>
+                <Fragment set:html={m.icono} />
+              </div>
+              <div class="modulo-slide-badge">
+                <span>Ingresar</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px">
+                  <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 5"/>
+                </svg>
+              </div>
+            </div>
+            <div class="modulo-nombre" style="font-size:1.05rem;font-weight:700;margin-bottom:4px;color:var(--texto)">{m.nombre}</div>
+            <div class="modulo-desc" style="font-size:0.78rem;line-height:1.35;color:var(--texto-muted)">{m.desc}</div>
+          </a>
+        ))}
+      </div>
+
+      <!-- Flecha Derecha (>) -->
+      <button class="slider-flecha-b" id="slider-modulos-next" aria-label="Siguiente módulo" title="Siguiente módulo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Indicadores y control de estado de rotación automática -->
+    <div class="slider-inferior-b">
+      <div class="slider-indicadores-b" id="slider-modulos-indicadores">
+        {modulos.map((_, idx) => (
+          <button
+            class={`slider-dot-b slider-modulos-dot ${idx === 0 ? 'activo' : ''}`}
+            data-indice={idx}
+            aria-label={`Ir a módulo ${idx + 1}`}
+            title={`Módulo ${idx + 1} de ${modulos.length}`}
+          />
+        ))}
+      </div>
+      <div class="slider-estado-b" id="slider-modulos-chip" title="Rotación automática cada 4s (pausa al pasar el cursor)">
+        <span class="slider-punto-rot"></span>
+        <span id="slider-modulos-txt">Auto (4s)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ventas recientes -->
+  <div class="seccion-titulo">Ventas de Hoy</div>
+  <div class="tabla-cont">
+    <div class="tabla-header">
+      <div class="tabla-header-titulo">Últimas transacciones</div>
+      <a href="/ventas" class="btn btn-secundario btn-sm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        Ver todas
+      </a>
+    </div>
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Cod.</th><th>Producto</th><th>Cliente</th>
+            <th>Hora</th><th>Pago</th><th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ventasRecientes.map(v => (
+            <tr class="animar">
+              <td><span class="celda-codigo">{v.id}</span></td>
+              <td style="font-weight:500">{v.producto}</td>
+              <td style="color:var(--texto-secundario)">{v.cliente}</td>
+              <td style="color:var(--texto-muted);font-family:var(--fuente-mono);font-size:0.82rem">{v.hora}</td>
+              <td>
+                <span class={`badge ${v.pago === 'QR' ? 'badge-info' : 'badge-neutro'}`}>
+                  {v.pago}
+                </span>
+              </td>
+              <td class="precio precio-positivo">Bs. {v.monto.toFixed(2)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</AppLayout>
+
+<script>
+  // Slider Dinámico 3D para Accesos Rápidos del Dashboard
+  const sliderContenedor = document.getElementById('slider-modulos-contenedor');
+  const sliderEscenario  = document.getElementById('slider-modulos-escenario');
+  const btnNext          = document.getElementById('slider-modulos-next');
+  const btnPrev          = document.getElementById('slider-modulos-prev');
+  const cards            = Array.from(document.querySelectorAll('.modulo-slide')) as HTMLElement[];
+  const dots             = Array.from(document.querySelectorAll('.slider-modulos-dot')) as HTMLElement[];
+  const estadoChip       = document.getElementById('slider-modulos-chip');
+  const estadoTxt        = document.getElementById('slider-modulos-txt');
+
+  const total = cards.length;
+  let curr = 0;
+  let timer: any = null;
+  let estaPausado = false;
+  const INTERVALO = 4000;
+
+  function actualizarPosiciones(nuevoIndice: number) {
+    curr = (nuevoIndice % total + total) % total;
+    const izq = (curr - 1 + total) % total;
+    const der = (curr + 1) % total;
+
+    cards.forEach((c, i) => {
+      c.classList.remove('card-centro', 'card-izq', 'card-der', 'card-oculta');
+      if (i === curr) {
+        c.classList.add('card-centro');
+      } else if (i === izq) {
+        c.classList.add('card-izq');
+      } else if (i === der) {
+        c.classList.add('card-der');
+      } else {
+        c.classList.add('card-oculta');
+      }
+    });
+
+    dots.forEach((dot, i) => {
+      if (i === curr) {
+        dot.classList.add('activo');
+      } else {
+        dot.classList.remove('activo');
+      }
+    });
+  }
+
+  function irA(nuevoIndice: number) {
+    actualizarPosiciones(nuevoIndice);
+    reiniciarTimer();
+  }
+
+  function reiniciarTimer() {
+    if (timer) clearInterval(timer);
+    if (!estaPausado) {
+      timer = setInterval(() => {
+        irA(curr + 1);
+      }, INTERVALO);
+    }
+  }
+
+  function pausar() {
+    estaPausado = true;
+    if (timer) clearInterval(timer);
+    if (estadoChip) estadoChip.classList.add('pausado');
+    if (estadoTxt) estadoTxt.textContent = 'Pausado';
+  }
+
+  function reanudar() {
+    estaPausado = false;
+    if (estadoChip) estadoChip.classList.remove('pausado');
+    if (estadoTxt) estadoTxt.textContent = 'Auto (4s)';
+    reiniciarTimer();
+  }
+
+  btnNext?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    irA(curr + 1);
+  });
+
+  btnPrev?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    irA(curr - 1);
+  });
+
+  cards.forEach((card) => {
+    card.addEventListener('click', (e) => {
+      const idx = parseInt(card.dataset.indice || '0', 10);
+      if (!card.classList.contains('card-centro')) {
+        e.preventDefault(); // Si no es la tarjeta central, rotar en lugar de navegar
+        irA(idx);
+      }
+      // Si ya está en el centro, navega normalmente hacia su href
+    });
+  });
+
+  dots.forEach((dot, idx) => {
+    dot.addEventListener('click', () => {
+      irA(idx);
+    });
+  });
+
+  sliderContenedor?.addEventListener('mouseenter', pausar);
+  sliderContenedor?.addEventListener('mouseleave', reanudar);
+
+  let touchInicioX = 0;
+  sliderEscenario?.addEventListener('touchstart', (e) => {
+    touchInicioX = e.touches[0].clientX;
+    pausar();
+  }, { passive: true });
+
+  sliderEscenario?.addEventListener('touchend', (e) => {
+    const diffX = e.changedTouches[0].clientX - touchInicioX;
+    if (diffX < -40) {
+      irA(curr + 1);
+    } else if (diffX > 40) {
+      irA(curr - 1);
+    }
+    reanudar();
+  }, { passive: true });
+
+  setTimeout(() => {
+    actualizarPosiciones(0);
+    reiniciarTimer();
+  }, 100);
+</script>

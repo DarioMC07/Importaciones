@@ -1,0 +1,230 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+
+const inventario = [
+  { cod: 'PRD001', nombre: 'Audífono Bluetooth X200', cantidad: 150, maxStock: 200, costoU: 18.50, precioV: 42.00 },
+  { cod: 'PRD002', nombre: 'Cable USB-C 2m',           cantidad: 480, maxStock: 500, costoU:  3.20, precioV:  9.50 },
+  { cod: 'PRD003', nombre: 'Destornillador Set 12p',   cantidad:  25, maxStock: 100, costoU: 12.00, precioV: 28.00 },
+  { cod: 'PRD004', nombre: 'Camiseta Deportiva',        cantidad:   8, maxStock: 200, costoU:  6.80, precioV: 18.00 },
+  { cod: 'PRD005', nombre: 'Resistor 100Ω Pack',        cantidad: 320, maxStock: 400, costoU:  2.50, precioV:  7.00 },
+  { cod: 'PRD006', nombre: 'Cargador Rápido 65W',       cantidad:  45, maxStock: 150, costoU: 15.00, precioV: 35.00 },
+];
+
+const totalItems    = inventario.reduce((a, p) => a + p.cantidad, 0);
+const stockBajo     = inventario.filter(p => p.cantidad / p.maxStock < 0.25).length;
+const valorTotal    = inventario.reduce((a, p) => a + p.cantidad * p.costoU, 0);
+
+function nivelClase(cant: number, max: number) {
+  const r = cant / max;
+  if (r >= 0.5) return 'stock-alto';
+  if (r >= 0.25) return 'stock-medio';
+  return 'stock-bajo';
+}
+function nivelPct(cant: number, max: number) {
+  return Math.round((cant / max) * 100);
+}
+---
+
+<AppLayout titulo="Inventario" paginaActual="inventario">
+
+  <div class="pagina-encabezado">
+    <div>
+      <h1 class="pagina-titulo">Inventario</h1>
+      <p class="pagina-subtitulo">Control de stock y valoración de existencias</p>
+    </div>
+    <div class="pagina-acciones">
+      <button class="btn btn-primario" data-abrir-modal="modal-ajuste" id="btn-ajuste">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Ajustar Stock
+      </button>
+    </div>
+  </div>
+
+  <!-- Alerta si hay bajo stock -->
+  {stockBajo > 0 && (
+    <div class="alerta alerta-adv">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <strong>Atención:</strong> {stockBajo} producto{stockBajo > 1 ? 's' : ''} con stock crítico (menos del 25% del máximo).
+    </div>
+  )}
+
+  <!-- Stats -->
+  <div class="stats-grilla" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+    <div class="stat-card animar" style="--sc-grad:linear-gradient(135deg,#2563EB,#06B6D4);--sc-fondo-icono:rgba(37,99,235,0.12);--sc-color-icono:#3B82F6">
+      <div class="stat-card-top">
+        <div class="stat-card-label">Unidades totales</div>
+        <div class="stat-card-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 10-5 10 5v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/></svg>
+        </div>
+      </div>
+      <div class="stat-card-valor">{totalItems.toLocaleString()}</div>
+      <div class="stat-card-cambio">En {inventario.length} productos</div>
+    </div>
+    <div class="stat-card animar" style="--sc-grad:linear-gradient(135deg,#EF4444,#F97316);--sc-fondo-icono:rgba(239,68,68,0.12);--sc-color-icono:#EF4444">
+      <div class="stat-card-top">
+        <div class="stat-card-label">Stock crítico</div>
+        <div class="stat-card-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+        </div>
+      </div>
+      <div class="stat-card-valor">{stockBajo}</div>
+      <div class={`stat-card-cambio ${stockBajo > 0 ? 'cambio-neg' : 'cambio-pos'}`}>
+        {stockBajo > 0 ? 'Requieren reposición' : 'Sin alertas'}
+      </div>
+    </div>
+    <div class="stat-card animar" style="--sc-grad:linear-gradient(135deg,#10B981,#059669);--sc-fondo-icono:rgba(16,185,129,0.12);--sc-color-icono:#10B981">
+      <div class="stat-card-top">
+        <div class="stat-card-label">Valor en stock</div>
+        <div class="stat-card-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+      </div>
+      <div class="stat-card-valor" style="font-size:1.5rem">Bs. {valorTotal.toFixed(0)}</div>
+      <div class="stat-card-cambio cambio-pos">Costo de inventario</div>
+    </div>
+  </div>
+
+  <!-- Tabla inventario -->
+  <div class="tabla-cont">
+    <div class="tabla-header">
+      <div class="tabla-header-titulo">Stock Actual por Producto</div>
+      <div class="tabla-acciones-header">
+        <div class="busqueda-cont">
+          <svg class="busqueda-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="input-busqueda" id="busqueda-inv" type="text" placeholder="Buscar producto…" />
+        </div>
+      </div>
+    </div>
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th><th>Producto</th><th>Nivel de Stock</th>
+            <th>Cantidad</th><th>Costo Unit.</th><th>P. Venta</th>
+            <th>Margen</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {inventario.map(item => {
+            const pct     = nivelPct(item.cantidad, item.maxStock);
+            const clase   = nivelClase(item.cantidad, item.maxStock);
+            const margen  = (((item.precioV - item.costoU) / item.costoU) * 100).toFixed(0);
+            const esBajo  = item.cantidad / item.maxStock < 0.25;
+            return (
+              <tr class="animar fila-inv" data-nombre={item.nombre.toLowerCase()}>
+                <td><span class="celda-codigo">{item.cod}</span></td>
+                <td>
+                  <div style="font-weight:600">{item.nombre}</div>
+                  {esBajo && <span class="badge badge-peligro" style="margin-top:3px;font-size:0.64rem">Stock bajo</span>}
+                </td>
+                <td style="min-width:160px">
+                  <div class="stock-bar">
+                    <div class="stock-pista">
+                      <div class={`stock-nivel ${clase}`} style={`width:${pct}%`}></div>
+                    </div>
+                    <span class="stock-num">{pct}%</span>
+                  </div>
+                </td>
+                <td style="font-family:var(--fuente-mono);font-weight:700">{item.cantidad.toLocaleString()}</td>
+                <td class="precio">Bs. {item.costoU.toFixed(2)}</td>
+                <td class="precio precio-positivo">Bs. {item.precioV.toFixed(2)}</td>
+                <td>
+                  <span class="badge badge-exito">+{margen}%</span>
+                </td>
+                <td>
+                  <div class="celda-acciones">
+                    <button
+                      class="btn btn-secundario btn-icono btn-sm btn-ajustar"
+                      title="Ajustar cantidad"
+                      data-abrir-modal="modal-ajuste"
+                      data-cod={item.cod}
+                      data-nombre={item.nombre}
+                      data-cant={item.cantidad}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL ajuste de stock -->
+  <div class="modal-overlay" id="modal-ajuste">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-titulo">
+          <div class="modal-titulo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 10-5 10 5v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/></svg>
+          </div>
+          Ajustar Stock
+        </div>
+        <button class="modal-cerrar" data-cerrar-modal>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grupo">
+          <label class="form-label">Producto</label>
+          <input class="form-input" id="aj-nombre" type="text" readonly style="opacity:0.7" />
+        </div>
+        <div class="form-grilla">
+          <div class="form-grupo">
+            <label class="form-label">Cantidad actual</label>
+            <input class="form-input" id="aj-actual" type="number" readonly style="opacity:0.7" />
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Tipo de ajuste</label>
+            <select class="form-select" id="aj-tipo">
+              <option value="entrada">Entrada (+)</option>
+              <option value="salida">Salida (−)</option>
+              <option value="correccion">Corrección directa</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Cantidad a ajustar</label>
+          <input class="form-input" id="aj-cantidad" type="number" min="1" placeholder="0" />
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Observación</label>
+          <textarea class="form-textarea" id="aj-obs" placeholder="Motivo del ajuste (opcional)…"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secundario" data-cerrar-modal>Cancelar</button>
+        <button class="btn btn-primario" id="btn-guardar-aj">Confirmar Ajuste</button>
+      </div>
+    </div>
+  </div>
+</AppLayout>
+
+<script>
+  // Búsqueda
+  const busq = document.getElementById('busqueda-inv') as HTMLInputElement;
+  busq?.addEventListener('input', () => {
+    const q = busq.value.toLowerCase();
+    document.querySelectorAll('.fila-inv').forEach(f => {
+      const n = (f as HTMLElement).dataset.nombre || '';
+      (f as HTMLElement).style.display = n.includes(q) ? '' : 'none';
+    });
+  });
+
+  // Rellenar modal ajuste al hacer clic en botón de fila
+  document.querySelectorAll('.btn-ajustar').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const d = (btn as HTMLElement).dataset;
+      (document.getElementById('aj-nombre')  as HTMLInputElement).value = d.nombre  || '';
+      (document.getElementById('aj-actual')  as HTMLInputElement).value = d.cant    || '';
+      (document.getElementById('aj-cantidad') as HTMLInputElement).value = '';
+    });
+  });
+
+  document.getElementById('btn-guardar-aj')?.addEventListener('click', () => {
+    document.getElementById('modal-ajuste')?.classList.remove('abierto');
+    document.body.style.overflow = '';
+  });
+</script>

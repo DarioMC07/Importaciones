@@ -1,0 +1,305 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+
+const ventasHoy = [
+  { id: 'V001', fecha: '2026-09-12', producto: 'Audífono Bluetooth X200', codProd: 'PRD001', cliente: 'María González',  codCli: 'CLI001', cant: 5,  tasaV: 42.00, pago: 'QR',      total: 210.00 },
+  { id: 'V002', fecha: '2026-09-12', producto: 'Cable USB-C 2m',           codProd: 'PRD002', cliente: 'Ana Flores',     codCli: 'CLI003', cant: 12, tasaV:  9.50, pago: 'Efectivo', total: 114.00 },
+  { id: 'V003', fecha: '2026-09-12', producto: 'Cargador Rápido 65W',       codProd: 'PRD006', cliente: 'Carlos Mendoza', codCli: 'CLI002', cant: 3,  tasaV: 35.00, pago: 'QR',      total: 105.00 },
+  { id: 'V004', fecha: '2026-09-12', producto: 'Destornillador Set 12p',    codProd: 'PRD003', cliente: 'Roberto Silva',  codCli: 'CLI004', cant: 3,  tasaV: 28.00, pago: 'Efectivo', total:  84.00 },
+  { id: 'V005', fecha: '2026-09-12', producto: 'Camiseta Deportiva',         codProd: 'PRD004', cliente: 'Luisa Vargas',   codCli: 'CLI005', cant: 4,  tasaV: 18.00, pago: 'QR',      total:  72.00 },
+];
+
+const totalHoy   = ventasHoy.reduce((a, v) => a + v.total, 0);
+const cantHoy    = ventasHoy.reduce((a, v) => a + v.cant, 0);
+const countQR    = ventasHoy.filter(v => v.pago === 'QR').length;
+const countEfect = ventasHoy.filter(v => v.pago === 'Efectivo').length;
+
+const productos = [
+  { cod: 'PRD001', nombre: 'Audífono Bluetooth X200', pv: 42.00 },
+  { cod: 'PRD002', nombre: 'Cable USB-C 2m',           pv:  9.50 },
+  { cod: 'PRD003', nombre: 'Destornillador Set 12p',   pv: 28.00 },
+  { cod: 'PRD004', nombre: 'Camiseta Deportiva',        pv: 18.00 },
+  { cod: 'PRD005', nombre: 'Resistor 100Ω Pack',        pv:  7.00 },
+  { cod: 'PRD006', nombre: 'Cargador Rápido 65W',       pv: 35.00 },
+];
+
+const clientes = [
+  { cod: 'CLI001', nombre: 'María González'  },
+  { cod: 'CLI002', nombre: 'Carlos Mendoza'  },
+  { cod: 'CLI003', nombre: 'Ana Flores'      },
+  { cod: 'CLI004', nombre: 'Roberto Silva'   },
+  { cod: 'CLI005', nombre: 'Luisa Vargas'    },
+];
+---
+
+<AppLayout titulo="Ventas" paginaActual="ventas">
+
+  <div class="pagina-encabezado">
+    <div>
+      <h1 class="pagina-titulo">Registro de Ventas</h1>
+      <p class="pagina-subtitulo">Registro diario — 12 de septiembre de 2026</p>
+    </div>
+    <div class="pagina-acciones">
+      <button class="btn btn-primario" data-abrir-modal="modal-venta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Registrar Venta
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats del día -->
+  <div class="stats-grilla" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr))">
+    <div class="stat-card animar" style="--sc-grad:linear-gradient(135deg,#2563EB,#06B6D4);--sc-fondo-icono:rgba(37,99,235,0.12);--sc-color-icono:#3B82F6">
+      <div class="stat-card-top">
+        <div class="stat-card-label">Ingresos del día</div>
+        <div class="stat-card-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+      </div>
+      <div class="stat-card-valor" style="font-size:1.6rem">Bs. {totalHoy.toFixed(2)}</div>
+      <div class="stat-card-cambio cambio-pos">↑ Total facturado hoy</div>
+    </div>
+    <div class="stat-card animar" style="--sc-grad:linear-gradient(135deg,#10B981,#059669);--sc-fondo-icono:rgba(16,185,129,0.12);--sc-color-icono:#10B981">
+      <div class="stat-card-top">
+        <div class="stat-card-label">Transacciones</div>
+        <div class="stat-card-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/></svg>
+        </div>
+      </div>
+      <div class="stat-card-valor">{ventasHoy.length}</div>
+      <div class="stat-card-cambio">Ventas registradas</div>
+    </div>
+    <div class="stat-card animar" style="--sc-grad:linear-gradient(135deg,#6366F1,#8B5CF6);--sc-fondo-icono:rgba(99,102,241,0.12);--sc-color-icono:#6366F1">
+      <div class="stat-card-top">
+        <div class="stat-card-label">Unidades vendidas</div>
+        <div class="stat-card-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 10-5 10 5v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2Z"/></svg>
+        </div>
+      </div>
+      <div class="stat-card-valor">{cantHoy}</div>
+      <div class="stat-card-cambio">Artículos despachados</div>
+    </div>
+    <div class="stat-card animar" style="--sc-grad:linear-gradient(135deg,#F59E0B,#F97316);--sc-fondo-icono:rgba(245,158,11,0.12);--sc-color-icono:#F59E0B">
+      <div class="stat-card-top">
+        <div class="stat-card-label">Formas de pago</div>
+        <div class="stat-card-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </div>
+      </div>
+      <div class="stat-card-valor" style="font-size:1.2rem">QR: {countQR} | Ef: {countEfect}</div>
+      <div class="stat-card-cambio">Distribución de pagos</div>
+    </div>
+  </div>
+
+  <!-- Tabla de ventas del día -->
+  <div class="tabla-cont">
+    <div class="tabla-header">
+      <div class="tabla-header-titulo">Ventas del Día</div>
+      <div class="tabla-acciones-header">
+        <div class="busqueda-cont">
+          <svg class="busqueda-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="input-busqueda" id="busqueda-ventas" type="text" placeholder="Buscar venta…" />
+        </div>
+      </div>
+    </div>
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Producto</th><th>Cliente</th>
+            <th>Cant.</th><th>Tasa Venta</th><th>Pago</th><th>Total</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ventasHoy.map(v => (
+            <tr class="animar fila-venta" data-busqueda={(v.producto + v.cliente).toLowerCase()}>
+              <td><span class="celda-codigo">{v.id}</span></td>
+              <td style="font-weight:500">{v.producto}</td>
+              <td style="color:var(--texto-secundario)">{v.cliente}</td>
+              <td style="font-family:var(--fuente-mono);font-weight:700;text-align:center">{v.cant}</td>
+              <td class="precio">Bs. {v.tasaV.toFixed(2)}</td>
+              <td>
+                <span class={`badge ${v.pago === 'QR' ? 'badge-info' : 'badge-neutro'}`}>
+                  {v.pago}
+                </span>
+              </td>
+              <td class="precio precio-positivo">Bs. {v.total.toFixed(2)}</td>
+              <td>
+                <div class="celda-acciones">
+                  <button class="btn btn-peligro btn-icono btn-sm" title="Anular venta">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+        <!-- Fila total -->
+        <tfoot>
+          <tr style="background:var(--superficie)">
+            <td colspan="3" style="font-weight:700;color:var(--texto);padding:14px var(--g-md)">TOTAL DEL DÍA</td>
+            <td style="font-family:var(--fuente-mono);font-weight:700;text-align:center">{cantHoy}</td>
+            <td></td>
+            <td></td>
+            <td class="precio" style="font-family:var(--fuente-titulo);font-size:1rem;font-weight:800;color:var(--exito)">
+              Bs. {totalHoy.toFixed(2)}
+            </td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL registrar venta -->
+  <div class="modal-overlay" id="modal-venta">
+    <div class="modal" style="max-width:620px">
+      <div class="modal-header">
+        <div class="modal-titulo">
+          <div class="modal-titulo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          </div>
+          Registrar Nueva Venta
+        </div>
+        <button class="modal-cerrar" data-cerrar-modal>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Producto y cliente -->
+        <div class="form-grilla">
+          <div class="form-grupo">
+            <label class="form-label">Producto</label>
+            <select class="form-select" id="venta-prod">
+              <option value="">Seleccionar…</option>
+              {productos.map(p => <option value={p.pv} data-nombre={p.nombre}>{p.cod} — {p.nombre}</option>)}
+            </select>
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Cliente</label>
+            <select class="form-select" id="venta-cli">
+              <option value="">Seleccionar…</option>
+              {clientes.map(c => <option value={c.cod}>{c.cod} — {c.nombre}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <!-- Fecha y cantidad -->
+        <div class="form-grilla">
+          <div class="form-grupo">
+            <label class="form-label">Fecha de Venta</label>
+            <input class="form-input" id="venta-fecha" type="date" value="2026-09-12" />
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Cantidad (unidades)</label>
+            <input class="form-input" id="venta-cant" type="number" min="1" placeholder="0" />
+          </div>
+        </div>
+
+        <!-- Tasa y total calculado -->
+        <div class="form-grilla">
+          <div class="form-grupo">
+            <label class="form-label">Tasa de Venta (Bs.)</label>
+            <input class="form-input" id="venta-tasa" type="number" step="0.01" placeholder="0.00" />
+            <span class="form-pista">Se sugiere del precio de lista del producto</span>
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Total calculado</label>
+            <input class="form-input" id="venta-total" type="text" readonly placeholder="Bs. 0.00"
+              style="opacity:0.8;font-family:var(--fuente-titulo);font-weight:700;color:var(--exito)" />
+          </div>
+        </div>
+
+        <!-- Forma de pago -->
+        <div class="form-grupo">
+          <label class="form-label">Forma de Pago</label>
+          <div class="pago-opciones">
+            <div class="pago-op seleccionado" data-pago="QR" id="pago-qr">
+              <div class="pago-icono">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7" rx="1"/>
+                  <rect x="14" y="3" width="7" height="7" rx="1"/>
+                  <rect x="3" y="14" width="7" height="7" rx="1"/>
+                  <rect x="14" y="14" width="3" height="3"/>
+                  <rect x="18" y="14" width="3" height="3"/>
+                  <rect x="14" y="18" width="3" height="3"/>
+                  <rect x="18" y="18" width="3" height="3"/>
+                </svg>
+              </div>
+              <div class="pago-nombre">QR Digital</div>
+              <div class="pago-desc">Transferencia / QR simple</div>
+            </div>
+            <div class="pago-op" data-pago="Efectivo" id="pago-efectivo">
+              <div class="pago-icono">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="6" width="20" height="12" rx="2"/>
+                  <circle cx="12" cy="12" r="3"/>
+                  <line x1="6" y1="12" x2="6.01" y2="12"/>
+                  <line x1="18" y1="12" x2="18.01" y2="12"/>
+                </svg>
+              </div>
+              <div class="pago-nombre">Efectivo</div>
+              <div class="pago-desc">Pago en efectivo de caja</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secundario" data-cerrar-modal>Cancelar</button>
+        <button class="btn btn-primario" id="btn-guardar-venta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Confirmar Venta
+        </button>
+      </div>
+    </div>
+  </div>
+</AppLayout>
+
+<script>
+  // Búsqueda
+  const busq = document.getElementById('busqueda-ventas') as HTMLInputElement;
+  busq?.addEventListener('input', () => {
+    const q = busq.value.toLowerCase();
+    document.querySelectorAll('.fila-venta').forEach(f => {
+      const n = (f as HTMLElement).dataset.busqueda || '';
+      (f as HTMLElement).style.display = n.includes(q) ? '' : 'none';
+    });
+  });
+
+  // Precio sugerido al elegir producto
+  const selectProd = document.getElementById('venta-prod') as HTMLSelectElement;
+  const inputTasa  = document.getElementById('venta-tasa')  as HTMLInputElement;
+  const inputCant  = document.getElementById('venta-cant')  as HTMLInputElement;
+  const inputTotal = document.getElementById('venta-total') as HTMLInputElement;
+
+  selectProd?.addEventListener('change', () => {
+    const pv = parseFloat(selectProd.value) || 0;
+    if (pv > 0) inputTasa.value = pv.toFixed(2);
+    calcTotal();
+  });
+
+  function calcTotal() {
+    const tasa = parseFloat(inputTasa.value)  || 0;
+    const cant = parseFloat(inputCant.value) || 0;
+    const total = tasa * cant;
+    inputTotal.value = total > 0 ? `Bs. ${total.toFixed(2)}` : 'Bs. 0.00';
+  }
+  inputTasa.addEventListener('input', calcTotal);
+  inputCant.addEventListener('input', calcTotal);
+
+  // Selección de pago
+  let pagoSeleccionado = 'QR';
+  document.querySelectorAll('.pago-op').forEach(op => {
+    op.addEventListener('click', () => {
+      document.querySelectorAll('.pago-op').forEach(o => o.classList.remove('seleccionado'));
+      op.classList.add('seleccionado');
+      pagoSeleccionado = (op as HTMLElement).dataset.pago || 'QR';
+    });
+  });
+
+  // Guardar venta (simulado)
+  document.getElementById('btn-guardar-venta')?.addEventListener('click', () => {
+    document.getElementById('modal-venta')?.classList.remove('abierto');
+    document.body.style.overflow = '';
+  });
+</script>

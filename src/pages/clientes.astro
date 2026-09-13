@@ -1,0 +1,201 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+
+const clientes = [
+  { cod: 'CLI001', ci: '12345678', nombre: 'María González',  cel: '+591 71234567', correo: 'maria.gonzalez@gmail.com' },
+  { cod: 'CLI002', ci: '23456789', nombre: 'Carlos Mendoza',  cel: '+591 72345678', correo: 'cmendoza@hotmail.com'      },
+  { cod: 'CLI003', ci: '34567890', nombre: 'Ana Flores',      cel: '+591 73456789', correo: 'ana.flores@empresa.com'    },
+  { cod: 'CLI004', ci: '45678901', nombre: 'Roberto Silva',   cel: '+591 74567890', correo: 'roberto.silva@outlook.com' },
+  { cod: 'CLI005', ci: '56789012', nombre: 'Luisa Vargas',    cel: '+591 75678901', correo: 'luisa.v@yahoo.com'         },
+];
+
+function iniciales(nombre: string) {
+  return nombre.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
+}
+
+const avatarColors = ['#2563EB','#10B981','#F59E0B','#EF4444','#6366F1'];
+---
+
+<AppLayout titulo="Clientes" paginaActual="clientes">
+
+  <div class="pagina-encabezado">
+    <div>
+      <h1 class="pagina-titulo">Clientes</h1>
+      <p class="pagina-subtitulo">Directorio de compradores y su información de contacto</p>
+    </div>
+    <div class="pagina-acciones">
+      <button class="btn btn-primario" data-abrir-modal="modal-cliente" id="btn-nuevo-cliente">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nuevo Cliente
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grilla" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">
+    <div class="stat-card animar" style="--sc-grad:linear-gradient(135deg,#6366F1,#8B5CF6);--sc-fondo-icono:rgba(99,102,241,0.12);--sc-color-icono:#6366F1">
+      <div class="stat-card-top">
+        <div class="stat-card-label">Total clientes</div>
+        <div class="stat-card-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+      </div>
+      <div class="stat-card-valor">{clientes.length}</div>
+      <div class="stat-card-cambio">Compradores registrados</div>
+    </div>
+    <div class="stat-card animar" style="--sc-grad:linear-gradient(135deg,#10B981,#059669);--sc-fondo-icono:rgba(16,185,129,0.12);--sc-color-icono:#10B981">
+      <div class="stat-card-top">
+        <div class="stat-card-label">Nuevos este mes</div>
+        <div class="stat-card-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        </div>
+      </div>
+      <div class="stat-card-valor">2</div>
+      <div class="stat-card-cambio cambio-pos">Septiembre 2026</div>
+    </div>
+  </div>
+
+  <!-- Tabla clientes -->
+  <div class="tabla-cont">
+    <div class="tabla-header">
+      <div class="tabla-header-titulo">Lista de Clientes</div>
+      <div class="tabla-acciones-header">
+        <div class="busqueda-cont">
+          <svg class="busqueda-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="input-busqueda" id="busqueda-cli" type="text" placeholder="Buscar cliente…" />
+        </div>
+      </div>
+    </div>
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th><th>Cliente</th><th>C.I.</th>
+            <th>Celular</th><th>Correo</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {clientes.map((c, i) => (
+            <tr class="animar fila-cli" data-nombre={c.nombre.toLowerCase()}>
+              <td><span class="celda-codigo">{c.cod}</span></td>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style={`width:34px;height:34px;border-radius:50%;background:${avatarColors[i % avatarColors.length]};display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:white;flex-shrink:0`}>
+                    {iniciales(c.nombre)}
+                  </div>
+                  <span style="font-weight:600">{c.nombre}</span>
+                </div>
+              </td>
+              <td style="font-family:var(--fuente-mono);color:var(--texto-secundario)">{c.ci}</td>
+              <td style="color:var(--texto-secundario)">{c.cel}</td>
+              <td style="color:var(--texto-muted);font-size:0.82rem">{c.correo}</td>
+              <td>
+                <div class="celda-acciones">
+                  <button
+                    class="btn btn-ghost btn-icono btn-sm btn-editar-cli"
+                    title="Editar"
+                    data-cod={c.cod} data-ci={c.ci}
+                    data-nombre={c.nombre} data-cel={c.cel} data-correo={c.correo}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                  </button>
+                  <button class="btn btn-peligro btn-icono btn-sm" title="Eliminar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL cliente -->
+  <div class="modal-overlay" id="modal-cliente">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-titulo">
+          <div class="modal-titulo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <span id="modal-cli-titulo">Nuevo Cliente</span>
+        </div>
+        <button class="modal-cerrar" data-cerrar-modal>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grilla">
+          <div class="form-grupo">
+            <label class="form-label">Código Cliente</label>
+            <input class="form-input" id="cli-cod" type="text" placeholder="CLI006" />
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Cédula de Identidad</label>
+            <input class="form-input" id="cli-ci" type="text" placeholder="12345678" />
+          </div>
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Nombre Completo</label>
+          <input class="form-input" id="cli-nombre" type="text" placeholder="Nombre y apellido del cliente" />
+        </div>
+        <div class="form-grilla">
+          <div class="form-grupo">
+            <label class="form-label">Celular</label>
+            <input class="form-input" id="cli-cel" type="tel" placeholder="+591 7XXXXXXX" />
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Correo Electrónico</label>
+            <input class="form-input" id="cli-correo" type="email" placeholder="cliente@correo.com" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secundario" data-cerrar-modal>Cancelar</button>
+        <button class="btn btn-primario" id="btn-guardar-cli">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+          Guardar Cliente
+        </button>
+      </div>
+    </div>
+  </div>
+</AppLayout>
+
+<script>
+  // Búsqueda
+  const busq = document.getElementById('busqueda-cli') as HTMLInputElement;
+  busq?.addEventListener('input', () => {
+    const q = busq.value.toLowerCase();
+    document.querySelectorAll('.fila-cli').forEach(f => {
+      const n = (f as HTMLElement).dataset.nombre || '';
+      (f as HTMLElement).style.display = n.includes(q) ? '' : 'none';
+    });
+  });
+
+  // Editar
+  document.querySelectorAll('.btn-editar-cli').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const d = (btn as HTMLElement).dataset;
+      (document.getElementById('cli-cod')    as HTMLInputElement).value = d.cod    || '';
+      (document.getElementById('cli-ci')     as HTMLInputElement).value = d.ci     || '';
+      (document.getElementById('cli-nombre') as HTMLInputElement).value = d.nombre || '';
+      (document.getElementById('cli-cel')    as HTMLInputElement).value = d.cel    || '';
+      (document.getElementById('cli-correo') as HTMLInputElement).value = d.correo || '';
+      (document.getElementById('modal-cli-titulo') as HTMLElement).textContent = 'Editar Cliente';
+      document.getElementById('modal-cliente')?.classList.add('abierto');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  document.getElementById('btn-nuevo-cliente')?.addEventListener('click', () => {
+    ['cli-cod','cli-ci','cli-nombre','cli-cel','cli-correo'].forEach(id =>
+      (document.getElementById(id) as HTMLInputElement).value = ''
+    );
+    (document.getElementById('modal-cli-titulo') as HTMLElement).textContent = 'Nuevo Cliente';
+  });
+
+  document.getElementById('btn-guardar-cli')?.addEventListener('click', () => {
+    document.getElementById('modal-cliente')?.classList.remove('abierto');
+    document.body.style.overflow = '';
+  });
+</script>

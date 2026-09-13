@@ -1,0 +1,284 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+
+const productos = [
+  { cod: 'PRD001', nombre: 'Audífono Bluetooth X200', cat: 'Electrónicos', costo: 18.50, pv: 42.00, transp: 2.80, imp: 2.25, dim: '20×15×8 cm' },
+  { cod: 'PRD002', nombre: 'Cable USB-C 2m',           cat: 'Electrónicos', costo:  3.20, pv:  9.50, transp: 0.50, imp: 0.40, dim: '5×5×200 cm' },
+  { cod: 'PRD003', nombre: 'Destornillador Set 12p',   cat: 'Herramientas', costo: 12.00, pv: 28.00, transp: 3.20, imp: 1.50, dim: '30×20×6 cm' },
+  { cod: 'PRD004', nombre: 'Camiseta Deportiva',        cat: 'Textiles',     costo:  6.80, pv: 18.00, transp: 1.20, imp: 0.80, dim: '25×20×2 cm' },
+  { cod: 'PRD005', nombre: 'Resistor 100Ω Pack',        cat: 'Componentes',  costo:  2.50, pv:  7.00, transp: 0.30, imp: 0.25, dim: '10×5×2 cm'  },
+  { cod: 'PRD006', nombre: 'Cargador Rápido 65W',       cat: 'Electrónicos', costo: 15.00, pv: 35.00, transp: 2.00, imp: 1.80, dim: '12×8×4 cm'  },
+];
+
+const categorias = [...new Set(productos.map(p => p.cat))];
+
+const catColor: Record<string, string> = {
+  'Electrónicos': '#2563EB',
+  'Herramientas': '#F59E0B',
+  'Textiles':     '#10B981',
+  'Componentes':  '#6366F1',
+};
+---
+
+<AppLayout titulo="Productos" paginaActual="productos">
+
+  <div class="pagina-encabezado">
+    <div>
+      <h1 class="pagina-titulo">Productos</h1>
+      <p class="pagina-subtitulo">Catálogo de artículos importados con costos y precios</p>
+    </div>
+    <div class="pagina-acciones">
+      <!-- Toggle de vista -->
+      <div class="toggle-vista" id="toggle-vista-prod">
+        <button class="tv-btn activo" data-vista="grilla" title="Vista grilla">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+        </button>
+        <button class="tv-btn" data-vista="lista" title="Vista lista">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="busqueda-cont">
+        <svg class="busqueda-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="input-busqueda" id="busqueda-prod" type="text" placeholder="Buscar producto…" />
+      </div>
+      <button class="btn btn-primario" data-abrir-modal="modal-producto" id="btn-nuevo-prod">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nuevo Producto
+      </button>
+    </div>
+  </div>
+
+  <!-- VISTA GRILLA -->
+  <div class="productos-grilla" id="vista-grilla">
+    {productos.map(p => {
+      const margen = (((p.pv - p.costo) / p.costo) * 100).toFixed(0);
+      const total  = (p.costo + p.transp + p.imp).toFixed(2);
+      const color  = catColor[p.cat] || '#2563EB';
+      return (
+        <div class="prod-card animar prod-item" data-nombre={p.nombre.toLowerCase()} data-cat={p.cat.toLowerCase()}>
+          <div class="prod-card-cat-badge" style={`background:${color}1a;color:${color}`}>{p.cat}</div>
+          <div class="prod-card-codigo">{p.cod}</div>
+          <div class="prod-card-nombre">{p.nombre}</div>
+          <div class="prod-card-precios">
+            <div class="prod-card-pv">Bs. {p.pv.toFixed(2)}</div>
+            <div class="prod-card-costo">Bs. {p.costo.toFixed(2)}</div>
+            <div class="prod-card-margen">+{margen}%</div>
+          </div>
+          <div class="prod-card-footer">
+            <span style="font-size:0.75rem;color:var(--texto-muted)">
+              Total costo: <strong style="color:var(--texto-secundario)">Bs. {total}</strong>
+            </span>
+            <div style="margin-left:auto;display:flex;gap:4px">
+              <button class="btn btn-ghost btn-icono btn-sm btn-editar-prod"
+                title="Editar"
+                data-cod={p.cod} data-nombre={p.nombre} data-cat={p.cat}
+                data-costo={p.costo} data-pv={p.pv} data-transp={p.transp}
+                data-imp={p.imp} data-dim={p.dim}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+              </button>
+              <button class="btn btn-peligro btn-icono btn-sm" title="Eliminar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+
+  <!-- VISTA LISTA -->
+  <div class="tabla-cont oculto" id="vista-lista">
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th><th>Nombre</th><th>Categoría</th>
+            <th>Costo</th><th>Transporte</th><th>Impuestos</th>
+            <th>P. Venta</th><th>Margen</th><th>Dimensiones</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {productos.map(p => {
+            const margen = (((p.pv - p.costo) / p.costo) * 100).toFixed(0);
+            const color  = catColor[p.cat] || '#2563EB';
+            return (
+              <tr class="animar prod-item" data-nombre={p.nombre.toLowerCase()} data-cat={p.cat.toLowerCase()}>
+                <td><span class="celda-codigo">{p.cod}</span></td>
+                <td style="font-weight:600">{p.nombre}</td>
+                <td><span class="badge" style={`background:${color}1a;color:${color}`}>{p.cat}</span></td>
+                <td class="precio">Bs. {p.costo.toFixed(2)}</td>
+                <td style="color:var(--texto-secundario)">Bs. {p.transp.toFixed(2)}</td>
+                <td style="color:var(--advertencia)">Bs. {p.imp.toFixed(2)}</td>
+                <td class="precio precio-positivo">Bs. {p.pv.toFixed(2)}</td>
+                <td><span class="badge badge-exito">+{margen}%</span></td>
+                <td style="color:var(--texto-muted);font-size:0.8rem">{p.dim}</td>
+                <td>
+                  <div class="celda-acciones">
+                    <button class="btn btn-ghost btn-icono btn-sm btn-editar-prod"
+                      title="Editar"
+                      data-cod={p.cod} data-nombre={p.nombre} data-cat={p.cat}
+                      data-costo={p.costo} data-pv={p.pv} data-transp={p.transp}
+                      data-imp={p.imp} data-dim={p.dim}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                    </button>
+                    <button class="btn btn-peligro btn-icono btn-sm" title="Eliminar">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL producto -->
+  <div class="modal-overlay" id="modal-producto">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-titulo">
+          <div class="modal-titulo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          </div>
+          <span id="modal-prod-titulo">Nuevo Producto</span>
+        </div>
+        <button class="modal-cerrar" data-cerrar-modal>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grilla">
+          <div class="form-grupo">
+            <label class="form-label">Código</label>
+            <input class="form-input" id="prod-cod" type="text" placeholder="PRD007" />
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Categoría</label>
+            <select class="form-select" id="prod-cat">
+              {categorias.map(c => <option value={c}>{c}</option>)}
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Nombre del Producto</label>
+          <input class="form-input" id="prod-nombre" type="text" placeholder="Nombre descriptivo del artículo" />
+        </div>
+        <div class="form-grilla-3 form-grilla">
+          <div class="form-grupo">
+            <label class="form-label">Costo (Bs.)</label>
+            <input class="form-input" id="prod-costo" type="number" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Transporte (Bs.)</label>
+            <input class="form-input" id="prod-transp" type="number" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Impuestos (Bs.)</label>
+            <input class="form-input" id="prod-imp" type="number" step="0.01" placeholder="0.00" />
+          </div>
+        </div>
+        <div class="form-grilla">
+          <div class="form-grupo">
+            <label class="form-label">Precio de Venta (Bs.)</label>
+            <input class="form-input" id="prod-pv" type="number" step="0.01" placeholder="0.00" />
+            <span class="form-pista" id="prod-margen-pista"></span>
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Dimensiones</label>
+            <input class="form-input" id="prod-dim" type="text" placeholder="Ej. 20×15×8 cm" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secundario" data-cerrar-modal>Cancelar</button>
+        <button class="btn btn-primario" id="btn-guardar-prod">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</AppLayout>
+
+<script>
+  // Toggle vista grilla / lista
+  const btnVistas = document.querySelectorAll('.tv-btn');
+  const vGrilla   = document.getElementById('vista-grilla')!;
+  const vLista    = document.getElementById('vista-lista')!;
+
+  btnVistas.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btnVistas.forEach(b => b.classList.remove('activo'));
+      btn.classList.add('activo');
+      const vista = (btn as HTMLElement).dataset.vista;
+      if (vista === 'grilla') { vGrilla.classList.remove('oculto'); vLista.classList.add('oculto'); }
+      else                    { vLista.classList.remove('oculto'); vGrilla.classList.add('oculto'); }
+    });
+  });
+
+  // Búsqueda
+  const busq = document.getElementById('busqueda-prod') as HTMLInputElement;
+  busq?.addEventListener('input', () => {
+    const q = busq.value.toLowerCase();
+    document.querySelectorAll('.prod-item').forEach(f => {
+      const n = (f as HTMLElement).dataset.nombre || '';
+      (f as HTMLElement).style.display = n.includes(q) ? '' : 'none';
+    });
+  });
+
+  // Cálculo de margen en tiempo real
+  function calcMargen() {
+    const costo = parseFloat((document.getElementById('prod-costo') as HTMLInputElement).value) || 0;
+    const transp = parseFloat((document.getElementById('prod-transp') as HTMLInputElement).value) || 0;
+    const imp    = parseFloat((document.getElementById('prod-imp')    as HTMLInputElement).value) || 0;
+    const pv     = parseFloat((document.getElementById('prod-pv')     as HTMLInputElement).value) || 0;
+    const total  = costo + transp + imp;
+    const pista  = document.getElementById('prod-margen-pista')!;
+    if (pv > 0 && total > 0) {
+      const margen = (((pv - total) / total) * 100).toFixed(1);
+      pista.textContent = `Margen sobre costo total: ${margen}%`;
+      pista.style.color = parseFloat(margen) > 0 ? 'var(--exito)' : 'var(--peligro)';
+    } else {
+      pista.textContent = '';
+    }
+  }
+  ['prod-costo','prod-transp','prod-imp','prod-pv'].forEach(id =>
+    document.getElementById(id)?.addEventListener('input', calcMargen)
+  );
+
+  // Editar producto
+  document.querySelectorAll('.btn-editar-prod').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const d = (btn as HTMLElement).dataset;
+      (document.getElementById('prod-cod')    as HTMLInputElement).value  = d.cod    || '';
+      (document.getElementById('prod-nombre') as HTMLInputElement).value  = d.nombre || '';
+      (document.getElementById('prod-cat')    as HTMLSelectElement).value = d.cat    || '';
+      (document.getElementById('prod-costo')  as HTMLInputElement).value  = d.costo  || '';
+      (document.getElementById('prod-pv')     as HTMLInputElement).value  = d.pv     || '';
+      (document.getElementById('prod-transp') as HTMLInputElement).value  = d.transp || '';
+      (document.getElementById('prod-imp')    as HTMLInputElement).value  = d.imp    || '';
+      (document.getElementById('prod-dim')    as HTMLInputElement).value  = d.dim    || '';
+      (document.getElementById('modal-prod-titulo') as HTMLElement).textContent = 'Editar Producto';
+      document.getElementById('modal-producto')?.classList.add('abierto');
+      document.body.style.overflow = 'hidden';
+      calcMargen();
+    });
+  });
+
+  // Limpiar modal
+  document.getElementById('btn-nuevo-prod')?.addEventListener('click', () => {
+    ['prod-cod','prod-nombre','prod-costo','prod-pv','prod-transp','prod-imp','prod-dim'].forEach(id => {
+      (document.getElementById(id) as HTMLInputElement).value = '';
+    });
+    (document.getElementById('modal-prod-titulo') as HTMLElement).textContent = 'Nuevo Producto';
+    (document.getElementById('prod-margen-pista') as HTMLElement).textContent = '';
+  });
+
+  document.getElementById('btn-guardar-prod')?.addEventListener('click', () => {
+    document.getElementById('modal-producto')?.classList.remove('abierto');
+    document.body.style.overflow = '';
+  });
+</script>
