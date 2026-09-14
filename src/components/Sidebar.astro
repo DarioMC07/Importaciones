@@ -76,14 +76,190 @@ const iconos: Record<string, string> = {
     ))}
   </nav>
 
-  <!-- Footer usuario -->
+  <!-- Footer usuario con dropdown -->
   <div class="sidebar-pie">
-    <div class="sidebar-usuario">
-      <div class="avatar-sidebar">AD</div>
-      <div class="usuario-info">
-        <div class="usuario-nombre">Administrador</div>
-        <div class="usuario-rol">Acceso completo</div>
+    <div class="sidebar-usuario-wrap" id="sidebar-usuario-wrap">
+      <button class="sidebar-usuario sidebar-usuario-btn" id="sidebar-usuario-btn" aria-haspopup="true" aria-expanded="false">
+        <div class="avatar-sidebar">AD</div>
+        <div class="usuario-info">
+          <div class="usuario-nombre">Administrador</div>
+          <div class="usuario-rol">Acceso completo</div>
+        </div>
+        <svg class="sidebar-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="18 15 12 9 6 15"/>
+        </svg>
+      </button>
+
+      <!-- Dropup: se abre hacia arriba -->
+      <div class="sidebar-dropup" id="sidebar-dropup" role="menu">
+        <a href="/settings" class="sidebar-drop-item" role="menuitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>Settings</span>
+        </a>
+        <button class="sidebar-drop-item sidebar-drop-peligro" id="sidebar-cerrar-sesion" role="menuitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          <span>Cerrar Sesión</span>
+        </button>
       </div>
     </div>
   </div>
 </aside>
+
+<style>
+  /* Wrapper del footer */
+  .sidebar-usuario-wrap {
+    position: relative;
+  }
+
+  /* Botón de usuario (reemplaza el div) */
+  .sidebar-usuario-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    border-radius: 10px;
+    padding: 8px;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sidebar-usuario-btn:hover {
+    background: rgba(255,255,255,0.05);
+  }
+  .sidebar-usuario-btn[aria-expanded="true"] {
+    background: rgba(37,99,235,0.1);
+  }
+
+  /* Chevron */
+  .sidebar-chevron {
+    width: 14px;
+    height: 14px;
+    color: var(--texto-muted, #4A5F8A);
+    margin-left: auto;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+  .sidebar-usuario-btn[aria-expanded="true"] .sidebar-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Dropup panel (se abre hacia arriba) */
+  .sidebar-dropup {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: var(--tarjeta, #0F1E38);
+    border: 1px solid var(--borde, #1E3A5F);
+    border-radius: 12px;
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03);
+    padding: 6px;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .sidebar-dropup.abierto {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  /* Ítems del dropup */
+  .sidebar-drop-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    padding: 9px 11px;
+    border-radius: 8px;
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--texto-secundario, #8B9CC8);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.14s, color 0.14s;
+    font-family: inherit;
+    text-align: left;
+  }
+  .sidebar-drop-item svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+  }
+  .sidebar-drop-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--texto, #F0F4FF);
+  }
+  .sidebar-drop-peligro {
+    color: var(--peligro, #EF4444);
+  }
+  .sidebar-drop-peligro:hover {
+    background: rgba(239,68,68,0.12);
+    color: #FF6B6B;
+  }
+
+  /* Modo claro */
+  [data-tema="claro"] .sidebar-dropup {
+    background: #ffffff;
+    border-color: #C7D7F0;
+    box-shadow: 0 -8px 32px rgba(15,23,42,0.12);
+  }
+  [data-tema="claro"] .sidebar-drop-item:hover {
+    background: rgba(37,99,235,0.07);
+    color: #0F172A;
+  }
+  [data-tema="claro"] .sidebar-usuario-btn:hover {
+    background: rgba(37,99,235,0.06);
+  }
+</style>
+
+<script>
+  const sidebarWrap   = document.getElementById('sidebar-usuario-wrap');
+  const sidebarBtn    = document.getElementById('sidebar-usuario-btn');
+  const sidebarDropup = document.getElementById('sidebar-dropup');
+  const sidebarCerrar = document.getElementById('sidebar-cerrar-sesion');
+
+  function abrirSidebarDrop() {
+    sidebarDropup?.classList.add('abierto');
+    sidebarBtn?.setAttribute('aria-expanded', 'true');
+  }
+
+  function cerrarSidebarDrop() {
+    sidebarDropup?.classList.remove('abierto');
+    sidebarBtn?.setAttribute('aria-expanded', 'false');
+  }
+
+  sidebarBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sidebarDropup?.classList.contains('abierto') ? cerrarSidebarDrop() : abrirSidebarDrop();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!sidebarWrap?.contains(e.target as Node)) {
+      cerrarSidebarDrop();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') cerrarSidebarDrop();
+  });
+
+  sidebarCerrar?.addEventListener('click', () => {
+    sessionStorage.removeItem('importpro-sesion');
+    window.location.href = '/login';
+  });
+</script>

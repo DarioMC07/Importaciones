@@ -32,6 +32,15 @@ const {
         document.documentElement.setAttribute('data-tema', t);
       })();
     </script>
+
+    <!-- Guard de sesión: redirige a /login si no hay sesión activa -->
+    <script is:inline>
+      (function() {
+        if (sessionStorage.getItem('importpro-sesion') !== 'activa') {
+          window.location.replace('/login');
+        }
+      })();
+    </script>
   </head>
 
   <body>

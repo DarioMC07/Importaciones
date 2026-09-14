@@ -395,7 +395,7 @@
       await new Promise(r => setTimeout(r, 1400));
 
       localStorage.setItem('importpro-usuario', usuario);
-      localStorage.setItem('importpro-sesion', 'activa');
+      sessionStorage.setItem('importpro-sesion', 'activa');
       const recordar = document.getElementById('recordarme');
       if (recordar && recordar.checked) localStorage.setItem('importpro-recordar', 'si');
 
