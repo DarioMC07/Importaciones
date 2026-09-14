@@ -1,0 +1,413 @@
+---
+// login.astro — ImportPro Login
+// Sin backend: cualquier credencial es aceptada, redirige al dashboard.
+---
+
+<!DOCTYPE html>
+<html lang="es" data-tema="oscuro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Acceso al sistema ImportPro — Gestión de Importaciones" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>Iniciar Sesión — ImportPro</title>
+
+  <script is:inline>
+    (function() {
+      var t = localStorage.getItem('importpro-tema') || 'oscuro';
+      document.documentElement.setAttribute('data-tema', t);
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --fondo:            #060E1E;
+      --tarjeta:          #0F1E38;
+      --borde:            #1E3A5F;
+      --borde-brillo:     rgba(37,99,235,0.4);
+      --primario:         #2563EB;
+      --primario-claro:   #3B82F6;
+      --acento:           #06B6D4;
+      --acento-claro:     #22D3EE;
+      --grad-primario:    linear-gradient(135deg, #2563EB 0%, #06B6D4 100%);
+      --texto:            #F0F4FF;
+      --texto-secundario: #8B9CC8;
+      --texto-muted:      #4A5F8A;
+      --peligro:          #EF4444;
+      --exito:            #10B981;
+      --glass-fondo:      rgba(10, 22, 40, 0.72);
+      --glass-borde:      rgba(255,255,255,0.07);
+      --sombra-lg:        0 8px 48px rgba(0,0,0,0.65);
+      --sombra-primario:  0 4px 24px rgba(37,99,235,0.5);
+      --fuente:           'Inter', system-ui, sans-serif;
+      --fuente-titulo:    'Outfit', system-ui, sans-serif;
+      --t-n: 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    [data-tema="claro"] {
+      --fondo:            #EEF2FF;
+      --borde:            #C7D7F0;
+      --texto:            #0F172A;
+      --texto-secundario: #4A5F8A;
+      --texto-muted:      #94A3B8;
+      --glass-fondo:      rgba(255,255,255,0.72);
+      --glass-borde:      rgba(37,99,235,0.15);
+    }
+
+    html, body { height: 100%; font-family: var(--fuente); background: var(--fondo); color: var(--texto); overflow: hidden; }
+
+    /* Fondo */
+    .login-bg { position: fixed; inset: 0; background: var(--fondo); overflow: hidden; }
+    .login-bg::before {
+      content: ''; position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(37,99,235,0.12) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: gridDrift 25s linear infinite;
+    }
+    @keyframes gridDrift { 0% { transform: translate(0,0); } 100% { transform: translate(40px,40px); } }
+
+    .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35; animation: orbFloat var(--dur,12s) ease-in-out infinite alternate; }
+    .orb-1 { width: 520px; height: 520px; background: radial-gradient(circle,#2563EB,transparent 70%); top: -120px; left: -80px; --dur:10s; }
+    .orb-2 { width: 420px; height: 420px; background: radial-gradient(circle,#06B6D4,transparent 70%); bottom:-100px; right:5%; --dur:14s; opacity:.28; }
+    .orb-3 { width: 280px; height: 280px; background: radial-gradient(circle,#6366F1,transparent 70%); top:40%; right:20%; --dur:18s; opacity:.22; }
+    @keyframes orbFloat { 0% { transform: scale(1) translate(0px,0px); } 50% { transform: scale(1.1) translate(20px,-20px); } 100% { transform: scale(0.95) translate(-15px,15px); } }
+
+    .login-lines {
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(-45deg,transparent,transparent 60px,rgba(37,99,235,0.025) 60px,rgba(37,99,235,0.025) 61px);
+    }
+
+    /* Layout */
+    .login-wrapper { position: relative; z-index: 10; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+
+    /* Panel */
+    .login-panel {
+      width: 100%; max-width: 440px;
+      background: var(--glass-fondo);
+      backdrop-filter: blur(24px) saturate(1.4);
+      -webkit-backdrop-filter: blur(24px) saturate(1.4);
+      border: 1px solid var(--glass-borde);
+      border-radius: 24px;
+      padding: 48px 44px;
+      box-shadow: var(--sombra-lg), 0 0 0 1px rgba(37,99,235,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
+      animation: panelEntrada 0.6s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes panelEntrada { from { opacity:0; transform:translateY(28px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+
+    /* Logo */
+    .login-logo { display: flex; align-items: center; gap: 14px; margin-bottom: 36px; }
+    .logo-icon-wrap { width:50px; height:50px; border-radius:14px; background:var(--grad-primario); display:flex; align-items:center; justify-content:center; box-shadow:var(--sombra-primario); flex-shrink:0; }
+    .logo-icon-wrap svg { width:26px; height:26px; stroke:#fff; }
+    .login-brand { display:flex; flex-direction:column; }
+    .login-brand-name { font-family:var(--fuente-titulo); font-size:1.5rem; font-weight:800; color:var(--texto); letter-spacing:-0.02em; line-height:1; }
+    .login-brand-sub { font-size:0.72rem; font-weight:500; color:var(--texto-muted); text-transform:uppercase; letter-spacing:0.08em; margin-top:4px; }
+
+    /* Header */
+    .login-titulo { font-family:var(--fuente-titulo); font-size:1.65rem; font-weight:800; color:var(--texto); letter-spacing:-0.025em; line-height:1.2; margin-bottom:6px; }
+    .login-subtitulo { font-size:0.875rem; color:var(--texto-secundario); margin-bottom:36px; line-height:1.5; }
+    .divider-grad { height:1px; background:linear-gradient(90deg,transparent,var(--borde-brillo),transparent); margin-bottom:32px; }
+
+    /* Campos */
+    .field-group { display:flex; flex-direction:column; gap:20px; margin-bottom:28px; }
+    .field { display:flex; flex-direction:column; gap:8px; }
+    .field-label { font-size:0.8rem; font-weight:600; color:var(--texto-secundario); text-transform:uppercase; letter-spacing:0.06em; display:flex; align-items:center; gap:6px; }
+    .field-label svg { width:13px; height:13px; stroke:var(--texto-muted); }
+    .field-input-wrap { position:relative; }
+    .field-input-wrap svg.input-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); width:17px; height:17px; stroke:var(--texto-muted); pointer-events:none; transition:stroke var(--t-n); }
+    .field-input {
+      width:100%; background:rgba(10,22,40,0.6); border:1.5px solid var(--borde); border-radius:12px;
+      padding:13px 44px 13px 44px; font-family:var(--fuente); font-size:0.92rem; color:var(--texto);
+      outline:none; transition:border-color var(--t-n),box-shadow var(--t-n),background var(--t-n); -webkit-appearance:none;
+    }
+    [data-tema="claro"] .field-input { background:rgba(255,255,255,0.8); }
+    .field-input::placeholder { color:var(--texto-muted); }
+    .field-input:focus { border-color:var(--primario-claro); box-shadow:0 0 0 3px rgba(37,99,235,0.18),0 2px 8px rgba(0,0,0,0.2); background:rgba(37,99,235,0.06); }
+    .field-input-wrap:focus-within svg.input-icon { stroke:var(--primario-claro); }
+
+    .btn-toggle-pass { position:absolute; right:13px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; padding:4px; color:var(--texto-muted); display:flex; align-items:center; transition:color var(--t-n); border-radius:6px; }
+    .btn-toggle-pass:hover { color:var(--texto-secundario); }
+    .btn-toggle-pass svg { width:17px; height:17px; stroke:currentColor; }
+
+    /* Opciones */
+    .field-opciones { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
+    .check-label { display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.83rem; color:var(--texto-secundario); user-select:none; }
+    .check-label input[type="checkbox"] { display:none; }
+    .check-box { width:18px; height:18px; border:1.5px solid var(--borde); border-radius:5px; background:rgba(10,22,40,0.5); display:flex; align-items:center; justify-content:center; transition:border-color var(--t-n),background var(--t-n); flex-shrink:0; }
+    .check-box svg { width:11px; height:11px; stroke:#fff; opacity:0; transition:opacity var(--t-n); }
+    .check-label input:checked + .check-box { background:var(--primario); border-color:var(--primario); }
+    .check-label input:checked + .check-box svg { opacity:1; }
+    .link-olvide { font-size:0.83rem; color:var(--primario-claro); text-decoration:none; transition:color var(--t-n); }
+    .link-olvide:hover { color:var(--acento-claro); }
+
+    /* Error */
+    .login-error { display:none; align-items:center; gap:8px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:10px; padding:11px 14px; font-size:0.83rem; color:#FCA5A5; margin-bottom:20px; animation:errorShake 0.4s cubic-bezier(0.36,0.07,0.19,0.97); }
+    .login-error.visible { display:flex; }
+    .login-error svg { width:16px; height:16px; stroke:#FCA5A5; flex-shrink:0; }
+    @keyframes errorShake { 10%,90% { transform:translateX(-2px); } 20%,80% { transform:translateX(4px); } 30%,50%,70% { transform:translateX(-4px); } 40%,60% { transform:translateX(4px); } }
+
+    /* Botón Login */
+    .btn-login { width:100%; padding:14px 24px; background:var(--grad-primario); border:none; border-radius:12px; font-family:var(--fuente-titulo); font-size:1rem; font-weight:700; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:var(--sombra-primario); transition:transform var(--t-n),box-shadow var(--t-n),filter var(--t-n); position:relative; overflow:hidden; letter-spacing:0.01em; }
+    .btn-login::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.15) 0%,transparent 50%); border-radius:inherit; }
+    .btn-login:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 32px rgba(37,99,235,0.6); filter:brightness(1.08); }
+    .btn-login:active:not(:disabled) { transform:translateY(0); box-shadow:var(--sombra-primario); }
+    .btn-login:disabled { cursor:not-allowed; opacity:0.75; filter:grayscale(0.3); }
+    .btn-login svg { width:18px; height:18px; stroke:#fff; transition:transform var(--t-n); }
+    .btn-login:hover:not(:disabled) svg { transform:translateX(3px); }
+
+    .spinner { width:18px; height:18px; border:2.5px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; display:none; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* Footer */
+    .login-footer { margin-top:28px; text-align:center; }
+    .login-footer-divider { display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+    .login-footer-divider::before, .login-footer-divider::after { content:''; flex:1; height:1px; background:var(--borde); }
+    .login-footer-divider span { font-size:0.75rem; color:var(--texto-muted); white-space:nowrap; }
+    .sistema-info { display:flex; align-items:center; justify-content:center; gap:10px; }
+    .badge-sistema { display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:99px; font-size:0.72rem; font-weight:600; letter-spacing:0.04em; border:1px solid; }
+    .badge-seg { background:rgba(16,185,129,0.08); border-color:rgba(16,185,129,0.25); color:#34D399; }
+    .badge-ver { background:rgba(37,99,235,0.08); border-color:rgba(37,99,235,0.25); color:#60A5FA; }
+    .badge-sistema svg { width:10px; height:10px; stroke:currentColor; }
+    .dot-online { width:7px; height:7px; border-radius:50%; background:#10B981; box-shadow:0 0 0 0 rgba(16,185,129,0.5); animation:pulse-dot 2s ease infinite; }
+    @keyframes pulse-dot { 0% { box-shadow:0 0 0 0 rgba(16,185,129,0.5); } 70% { box-shadow:0 0 0 6px rgba(16,185,129,0); } 100% { box-shadow:0 0 0 0 rgba(16,185,129,0); } }
+
+    .login-copy { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); font-size:0.72rem; color:var(--texto-muted); white-space:nowrap; opacity:0.7; }
+
+    /* Partículas */
+    .particles { position:fixed; inset:0; pointer-events:none; z-index:1; }
+    .particle { position:absolute; border-radius:50%; opacity:0; animation:floatUp var(--dur,8s) var(--delay,0s) ease-in infinite; }
+    @keyframes floatUp { 0% { opacity:0; transform:translateY(0) scale(0.5); } 10% { opacity:0.4; } 90% { opacity:0.1; } 100% { opacity:0; transform:translateY(-100vh) scale(1.2); } }
+
+    @media (max-width:480px) { .login-panel { padding:36px 28px; } .login-titulo { font-size:1.4rem; } }
+  </style>
+</head>
+<body>
+
+  <div class="login-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="login-lines"></div>
+  </div>
+
+  <div class="particles" id="particles"></div>
+
+  <div class="login-wrapper">
+    <div class="login-panel">
+
+      <div class="login-logo">
+        <div class="logo-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"/>
+            <path d="M16.5 9.4 7.55 4.24"/>
+            <polyline points="3.29 7 12 12 20.71 7"/>
+            <line x1="12" y1="22" x2="12" y2="12"/>
+            <circle cx="18.5" cy="15.5" r="2.5"/>
+            <path d="M20.27 17.27 22 19"/>
+          </svg>
+        </div>
+        <div class="login-brand">
+          <span class="login-brand-name">ImportPro</span>
+          <span class="login-brand-sub">Gestión de Importaciones</span>
+        </div>
+      </div>
+
+      <div class="login-titulo">Bienvenido de vuelta</div>
+      <div class="login-subtitulo">Ingresa tus credenciales para acceder al sistema.</div>
+
+      <div class="divider-grad"></div>
+
+      <form id="login-form" novalidate autocomplete="off">
+
+        <div class="login-error" id="login-error" role="alert">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span id="error-msg">Por favor completa los campos requeridos.</span>
+        </div>
+
+        <div class="field-group">
+          <div class="field">
+            <label class="field-label" for="campo-usuario">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              Usuario
+            </label>
+            <div class="field-input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              <input id="campo-usuario" type="text" class="field-input" placeholder="Ej: admin" autocomplete="username" spellcheck="false" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="campo-password">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              Contraseña
+            </label>
+            <div class="field-input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <input id="campo-password" type="password" class="field-input" placeholder="••••••••" autocomplete="current-password" />
+              <button type="button" class="btn-toggle-pass" id="toggle-pass" aria-label="Mostrar u ocultar contraseña">
+                <svg id="icon-ojo-abierto" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+                <svg id="icon-ojo-cerrado" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-opciones">
+          <label class="check-label">
+            <input type="checkbox" id="recordarme" />
+            <span class="check-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </span>
+            Recordarme
+          </label>
+          <a href="#" class="link-olvide">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <button type="submit" class="btn-login" id="btn-ingresar">
+          <div class="spinner" id="login-spinner"></div>
+          <span id="btn-texto">Ingresar al sistema</span>
+          <svg id="btn-arrow" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </button>
+
+      </form>
+
+      <div class="login-footer">
+        <div class="login-footer-divider">
+          <span>Sistema seguro y cifrado</span>
+        </div>
+        <div class="sistema-info">
+          <div class="badge-sistema badge-seg">
+            <div class="dot-online"></div>
+            En línea
+          </div>
+          <div class="badge-sistema badge-ver">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            v2.6.0
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="login-copy">© 2026 ImportPro · Todos los derechos reservados</div>
+
+<script>
+  // Partículas flotantes
+  const container = document.getElementById('particles');
+  if (container) {
+    const colors = ['#2563EB', '#06B6D4', '#6366F1', '#10B981'];
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 4 + 2;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;bottom:-${size}px;background:${color};--dur:${6+Math.random()*10}s;--delay:${Math.random()*12}s`;
+      container.appendChild(p);
+    }
+  }
+
+  // Toggle contraseña
+  const inputPass   = document.getElementById('campo-password');
+  const togglePass  = document.getElementById('toggle-pass');
+  const iconAbierto = document.getElementById('icon-ojo-abierto');
+  const iconCerrado = document.getElementById('icon-ojo-cerrado');
+
+  if (togglePass && inputPass) {
+    togglePass.addEventListener('click', () => {
+      const visible = inputPass.type === 'text';
+      inputPass.type = visible ? 'password' : 'text';
+      if (iconAbierto) iconAbierto.style.display = visible ? 'block' : 'none';
+      if (iconCerrado) iconCerrado.style.display = visible ? 'none'  : 'block';
+    });
+  }
+
+  // Formulario
+  const form      = document.getElementById('login-form');
+  const inputUser = document.getElementById('campo-usuario');
+  const btnLogin  = document.getElementById('btn-ingresar');
+  const btnTexto  = document.getElementById('btn-texto');
+  const btnArrow  = document.getElementById('btn-arrow');
+  const spinner   = document.getElementById('login-spinner');
+  const errorBox  = document.getElementById('login-error');
+  const errorMsg  = document.getElementById('error-msg');
+
+  function mostrarError(msg) {
+    if (errorMsg) errorMsg.textContent = msg;
+    if (errorBox) errorBox.classList.add('visible');
+    [inputUser, inputPass].forEach(el => {
+      if (el) { el.style.borderColor = 'rgba(239,68,68,0.6)'; el.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.15)'; }
+    });
+  }
+
+  function ocultarError() {
+    if (errorBox) errorBox.classList.remove('visible');
+    [inputUser, inputPass].forEach(el => {
+      if (el) { el.style.borderColor = ''; el.style.boxShadow = ''; }
+    });
+  }
+
+  [inputUser, inputPass].forEach(el => { if (el) el.addEventListener('input', ocultarError); });
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      ocultarError();
+
+      const usuario    = inputUser ? inputUser.value.trim() : '';
+      const contrasena = inputPass ? inputPass.value : '';
+
+      if (!usuario) { mostrarError('Por favor ingresa tu nombre de usuario.'); if (inputUser) inputUser.focus(); return; }
+      if (!contrasena) { mostrarError('Por favor ingresa tu contraseña.'); if (inputPass) inputPass.focus(); return; }
+      if (contrasena.length < 3) { mostrarError('La contraseña debe tener al menos 3 caracteres.'); if (inputPass) inputPass.focus(); return; }
+
+      if (btnLogin) btnLogin.disabled = true;
+      if (spinner)  spinner.style.display = 'block';
+      if (btnTexto) btnTexto.textContent = 'Verificando...';
+      if (btnArrow) btnArrow.style.display = 'none';
+
+      await new Promise(r => setTimeout(r, 1400));
+
+      localStorage.setItem('importpro-usuario', usuario);
+      localStorage.setItem('importpro-sesion', 'activa');
+      const recordar = document.getElementById('recordarme');
+      if (recordar && recordar.checked) localStorage.setItem('importpro-recordar', 'si');
+
+      if (btnTexto) btnTexto.textContent = '¡Acceso concedido!';
+      if (btnLogin) { btnLogin.style.background = 'linear-gradient(135deg,#10B981 0%,#059669 100%)'; btnLogin.style.boxShadow = '0 4px 24px rgba(16,185,129,0.5)'; }
+      if (spinner)  spinner.style.display = 'none';
+
+      await new Promise(r => setTimeout(r, 700));
+      window.location.href = '/';
+    });
+  }
+</script>
+
+</body>
+</html>
