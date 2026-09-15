@@ -45,6 +45,8 @@ const {
 
   <body>
     <div class="app">
+      <!-- Overlay para oscurecer fondo en móviles -->
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
       <Sidebar paginaActual={paginaActual} />
       <div class="contenido-app">
         <Header titulo={titulo} />
@@ -54,7 +56,7 @@ const {
       </div>
     </div>
 
-    <!-- Script global: toggle tema + modal helpers -->
+    <!-- Script global: toggle tema + sidebar móvil + modal helpers -->
     <script>
       // ── Toggle tema ──────────────────────────────
       document.addEventListener('click', (e) => {
@@ -65,6 +67,48 @@ const {
         const nuevo   = actual === 'oscuro' ? 'claro' : 'oscuro';
         html.setAttribute('data-tema', nuevo);
         localStorage.setItem('importpro-tema', nuevo);
+      });
+
+      // ── Sidebar móvil (drawer) ───────────────────
+      const sidebar = document.getElementById('sidebar-app');
+      const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+      function abrirSidebar() {
+        sidebar?.classList.add('abierto');
+        sidebarOverlay?.classList.add('activo');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function cerrarSidebar() {
+        sidebar?.classList.remove('abierto');
+        sidebarOverlay?.classList.remove('activo');
+        document.body.style.overflow = '';
+      }
+
+      document.addEventListener('click', (e) => {
+        const target = e.target as Element;
+
+        // Botón toggle menú hamburguesa
+        if (target.closest('#btn-toggle-sidebar')) {
+          const yaAbierto = sidebar?.classList.contains('abierto');
+          if (yaAbierto) {
+            cerrarSidebar();
+          } else {
+            abrirSidebar();
+          }
+          return;
+        }
+
+        // Botón cerrar sidebar móvil o clic en el overlay
+        if (target.closest('#btn-cerrar-sidebar-movil') || target.id === 'sidebar-overlay') {
+          cerrarSidebar();
+          return;
+        }
+
+        // Al hacer clic en un ítem de navegación en pantallas móviles, cerrar el sidebar
+        if (window.innerWidth <= 1024 && target.closest('.nav-item')) {
+          cerrarSidebar();
+        }
       });
 
       // ── Modales: apertura/cierre global ─────────
@@ -96,9 +140,10 @@ const {
         }
       });
 
-      // Tecla Escape
+      // Tecla Escape (cierra modales y sidebar)
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
+          cerrarSidebar();
           document.querySelectorAll('.modal-overlay.abierto').forEach(m => {
             m.classList.remove('abierto');
           });

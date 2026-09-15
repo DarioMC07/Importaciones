@@ -40,7 +40,7 @@ const iconos: Record<string, string> = {
 };
 ---
 
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar-app">
   <!-- Logo -->
   <div class="sidebar-logo">
     <div class="logo-icono">
@@ -56,6 +56,13 @@ const iconos: Record<string, string> = {
       <span class="logo-nombre">ImportPro</span>
       <span class="logo-slogan">Gestión de Importaciones</span>
     </div>
+    <!-- Botón cerrar móvil -->
+    <button class="sidebar-cerrar-movil" id="btn-cerrar-sidebar-movil" aria-label="Cerrar menú" title="Cerrar menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
   </div>
 
   <!-- Navegación -->
@@ -113,6 +120,36 @@ const iconos: Record<string, string> = {
 </aside>
 
 <style>
+  .sidebar-cerrar-movil {
+    display: none;
+    margin-left: auto;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--r-md);
+    align-items: center;
+    justify-content: center;
+    color: var(--texto-secundario);
+    background: rgba(255,255,255,0.06);
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, transform 0.15s;
+    flex-shrink: 0;
+  }
+  .sidebar-cerrar-movil:hover {
+    background: rgba(239,68,68,0.18);
+    color: #FF6B6B;
+    transform: scale(1.05);
+  }
+  .sidebar-cerrar-movil svg {
+    width: 18px;
+    height: 18px;
+  }
+  @media (max-width: 1024px) {
+    .sidebar-cerrar-movil {
+      display: flex;
+    }
+  }
+
   /* Wrapper del footer */
   .sidebar-usuario-wrap {
     position: relative;

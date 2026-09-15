@@ -10,8 +10,17 @@ const fecha = ahora.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeri
 
 <header class="header">
   <div class="header-izq">
-    <div class="header-titulo">{titulo}</div>
-    <div class="header-breadcrumb">ImportPro · {fecha}</div>
+    <button class="header-btn btn-toggle-sidebar" id="btn-toggle-sidebar" title="Abrir menú" aria-label="Abrir menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <div class="header-titulos">
+      <div class="header-titulo">{titulo}</div>
+      <div class="header-breadcrumb">ImportPro · {fecha}</div>
+    </div>
   </div>
 
   <div class="header-der">
@@ -83,6 +92,36 @@ const fecha = ahora.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeri
 </header>
 
 <style>
+  .header-izq {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+  .header-titulos {
+    min-width: 0;
+  }
+  .btn-toggle-sidebar {
+    display: none;
+    flex-shrink: 0;
+  }
+  @media (max-width: 1024px) {
+    .btn-toggle-sidebar {
+      display: flex;
+    }
+  }
+  @media (max-width: 520px) {
+    .header-breadcrumb {
+      display: none;
+    }
+    .header-titulo {
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
   .header-usuario-wrap {
     position: relative;
   }
